@@ -24,9 +24,13 @@ public:
 };
 
 class pawn : public chess_piece {
+public:
+	pawn(color c) {
+		super(c);
+	}
 	bool is_move_valid(int stx, int sty, int destx, int desty) override{
 		if (((stx == destx) && (((int)c * (desty - sty)) == 1 || ((int)c * (desty - sty) == 2))) ||
-			((stx - destx) == (stx - destx))
+			((desty - sty) == c && abs(destx - stx) == 1)
 		) {
 			return true;
 		}

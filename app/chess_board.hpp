@@ -12,13 +12,12 @@ public:
 	chess_board() {
 		for (auto& row : board_field) {
 			for (auto& column : row) {
-				//column.piece;
+				column.set_piece(pawn(color::WHITE))
 			}
 		}
 	}
 
 	bool move(int stx, int sty, int destx, int desty) {
-
 	}
 
 	bool move_bishop(int stx, int sty, int destx, int desty) {
