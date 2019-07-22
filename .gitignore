@@ -34,3 +34,4 @@
 # CMake
 CMakeSettings.json
 out
+.vs

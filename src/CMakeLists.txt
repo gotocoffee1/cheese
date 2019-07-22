@@ -1,5 +1,5 @@
 
-set(LIB_NAME "cheese")
+set(LIB_NAME "libcheese")
 
 add_library(${LIB_NAME})
 
