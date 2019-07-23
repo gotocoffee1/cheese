@@ -17,14 +17,4 @@ public:
 			}
 		}
 	}
-
-	bool move(int stx, int sty, int destx, int desty) {
-	}
-
-	bool move_bishop(int stx, int sty, int destx, int desty) {
-		if (abs(stx - destx) == abs(stx - destx)) {
-			return true;
-		}
-		return false;
-	}
 };

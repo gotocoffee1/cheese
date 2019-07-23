@@ -39,9 +39,61 @@ public:
 class knight : public chess_piece {
 public:
 	knight(color c) : chess_piece(c) {}
+
 	bool is_move_valid(int stx, int sty, int destx, int desty) override {
 		if (((abs(destx - stx) == 2) && (abs(desty - sty) == 1)) ||
 			((abs(destx - stx) == 1) && (abs(desty - sty) == 2))) {
+			return true;
+		}
+		return false;
+	}
+};
+
+class bishop : public chess_piece {
+public:
+	bishop(color c) : chess_piece(c) {}
+
+	bool is_move_valid(int stx, int sty, int destx, int desty) override {
+		if (abs(destx - stx) == abs(destx - sty) &&
+			(abs(destx - stx) != 0) && (abs(desty - sty) != 0)) {
+			return true;
+		}
+		return false;
+	}
+};
+
+class rook : public chess_piece {
+public:
+	rook(color c) : chess_piece(c) {}
+
+	bool is_move_valid(int stx, int sty, int destx, int desty) override {
+		if (((destx == stx) && (desty != sty)) ||
+			((destx != stx) && (desty != sty))) {
+			return true;
+		}
+		return false;
+	}
+};
+
+class queen : public chess_piece {
+public:
+	queen(color c) : chess_piece(c) {}
+
+	bool is_move_valid(int stx, int sty, int destx, int desty) override {
+		//if (bishop::is_move_valid(stx, sty, destx, desty) || rook::is_move_valid(stx, sty, destx, desty)) {
+		//return true;
+		//}
+		return false;
+	}
+};
+
+class king : public chess_piece {
+public:
+	king(color c) : chess_piece(c) {}
+
+	bool is_move_valid(int stx, int sty, int destx, int desty) override {
+		if (((abs(destx - stx) == 1) && (abs(desty - sty) <= 1)) ||
+			((abs(destx - stx) <= 1) && (abs(desty - sty) == 1))) {
 			return true;
 		}
 		return false;
