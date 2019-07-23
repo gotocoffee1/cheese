@@ -13,7 +13,7 @@ public:
 		for (auto& row : board_field) {
 			for (auto& column : row) {
 				pawn p(color::WHITE);
-				//column.set_piece(p);
+				column.set_piece(p);
 			}
 		}
 	}

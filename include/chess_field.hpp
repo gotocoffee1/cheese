@@ -13,4 +13,9 @@ public:
 	void set_piece(chess_piece* cp) {
 		piece = cp;
 	}
+
+	chess_piece* get_piece()
+	{
+		return piece;
+	}
 };
