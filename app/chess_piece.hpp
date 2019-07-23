@@ -25,13 +25,23 @@ public:
 
 class pawn : public chess_piece {
 public:
-	pawn(color c) {
-		super(c);
-	}
-	bool is_move_valid(int stx, int sty, int destx, int desty) override{
+	pawn(color c) : chess_piece(c) {}
+
+	bool is_move_valid(int stx, int sty, int destx, int desty) override {
 		if (((stx == destx) && (((int)c * (desty - sty)) == 1 || ((int)c * (desty - sty) == 2))) ||
-			((desty - sty) == c && abs(destx - stx) == 1)
-		) {
+			((desty - sty) == (int)c && abs(destx - stx) == 1)) {
+			return true;
+		}
+		return false;
+	}
+};
+
+class knight : public chess_piece {
+public:
+	knight(color c) : chess_piece(c) {}
+	bool is_move_valid(int stx, int sty, int destx, int desty) override {
+		if (((abs(destx - stx) == 2) && (abs(desty - sty) == 1)) ||
+			((abs(destx - stx) == 1) && (abs(desty - sty) == 2))) {
 			return true;
 		}
 		return false;

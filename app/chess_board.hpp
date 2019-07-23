@@ -12,7 +12,8 @@ public:
 	chess_board() {
 		for (auto& row : board_field) {
 			for (auto& column : row) {
-				column.set_piece(pawn(color::WHITE))
+				pawn p(color::WHITE);
+				column.set_piece(p);
 			}
 		}
 	}
