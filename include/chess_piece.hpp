@@ -19,13 +19,13 @@ class chess_piece
 	*/
 public:
 	color c;
-	char short_name;
+	string short_name;
 	chess_piece(color c)
 	{
 		this->c = c;
 	}
 	virtual bool is_move_valid(int stx, int sty, int destx, int desty) = 0;
-	char get_short_name()
+	string get_short_name()
 	{
 		return short_name;
 	}
@@ -36,7 +36,7 @@ class empty : public chess_piece
 public:
 	empty(color c) : chess_piece(c)
 	{
-		short_name = ' ';
+		short_name = " ";
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -50,7 +50,7 @@ class pawn : public chess_piece
 public:
 	pawn(color c) : chess_piece(c)
 	{
-		short_name = 'P';
+		short_name = "P";
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -69,7 +69,7 @@ class knight : public chess_piece
 public:
 	knight(color c) : chess_piece(c)
 	{
-		short_name = 'H';
+		short_name = "H";
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -88,7 +88,7 @@ class bishop : public chess_piece
 public:
 	bishop(color c) : chess_piece(c)
 	{
-		short_name = 'B';
+		short_name = "B";
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -107,7 +107,7 @@ class rook : public chess_piece
 public:
 	rook(color c) : chess_piece(c)
 	{
-		short_name = 'R';
+		short_name = "R";
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -126,7 +126,7 @@ class queen : public chess_piece
 public:
 	queen(color c) : chess_piece(c)
 	{
-		short_name = 'Q';
+		short_name = "Q";
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -143,7 +143,7 @@ class king : public chess_piece
 public:
 	king(color c) : chess_piece(c)
 	{
-		short_name = 'K';
+		short_name = "K";
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override

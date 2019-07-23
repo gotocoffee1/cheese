@@ -49,10 +49,9 @@ public:
 			{
 				number_helper += "  " + to_string(i + 1) + "  ";
 				border_helper += "-----";
-				empty_white_field = "||" + to_string(i + 1) + "||";
-				empty_black_field = "  " + to_string(i + 1) + "  ";
-				//empty_white_field = "||" + cb.board_field[i][h].get_piece + "||";
-				//empty_black_field = "  " + cb.board_field[i][h].get_piece + "  ";
+				cout << (*cb.board_field[h][i].get_piece()).get_short_name() + "\n";
+				empty_white_field = "||" + (*cb.board_field[h][i].get_piece()).get_short_name() + "||";
+				empty_black_field = "  " + (*cb.board_field[h][i].get_piece()).get_short_name() + "  ";
 
 				if (i % 2 == 0)
 				{
