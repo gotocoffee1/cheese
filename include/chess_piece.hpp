@@ -31,6 +31,20 @@ public:
 	}
 };
 
+class empty : public chess_piece
+{
+public:
+	empty(color c) : chess_piece(c)
+	{
+		short_name = ' ';
+	}
+
+	bool is_move_valid(int stx, int sty, int destx, int desty) override
+	{
+		return false;
+	}
+};
+
 class pawn : public chess_piece
 {
 public:
