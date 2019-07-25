@@ -3,6 +3,7 @@
 enum class color
 {
 	WHITE = 1,
+	NONE = 0,
 	BLACK = -1
 };
 
@@ -19,16 +20,30 @@ class chess_piece
 	*/
 public:
 	color c;
-	string short_name;
+	string short_name = "";
+	double value = 0.0;
+
 	chess_piece(color c)
 	{
 		this->c = c;
 	}
-	virtual bool is_move_valid(int stx, int sty, int destx, int desty) = 0;
+	/*
+	color get_color()
+	{
+		//return color; //color nicht zulässig?
+	}
+	*/
+
 	string get_short_name()
 	{
 		return short_name;
 	}
+
+	double get_value() {
+		return value;
+	}
+
+	virtual bool is_move_valid(int stx, int sty, int destx, int desty) = 0;
 };
 
 class empty : public chess_piece
@@ -37,6 +52,7 @@ public:
 	empty(color c) : chess_piece(c)
 	{
 		short_name = " ";
+		value = 0;
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -51,6 +67,7 @@ public:
 	pawn(color c) : chess_piece(c)
 	{
 		short_name = "P";
+		value = 1;
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -70,6 +87,7 @@ public:
 	knight(color c) : chess_piece(c)
 	{
 		short_name = "H";
+		value = 3;
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -89,6 +107,7 @@ public:
 	bishop(color c) : chess_piece(c)
 	{
 		short_name = "B";
+		value = 3;
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -108,6 +127,7 @@ public:
 	rook(color c) : chess_piece(c)
 	{
 		short_name = "R";
+		value = 5;
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -127,6 +147,7 @@ public:
 	queen(color c) : chess_piece(c)
 	{
 		short_name = "Q";
+		value = 9;
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
@@ -144,6 +165,7 @@ public:
 	king(color c) : chess_piece(c)
 	{
 		short_name = "K";
+		value = std::numeric_limits<float>::infinity();
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override

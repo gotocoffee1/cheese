@@ -45,6 +45,20 @@ int run(int argc, char** argv)
 	// Clean up
 	SDL_Quit();
 
+	while (true) {
+		int stx = -1, sty = -1, destx = -1, desty = -1;
+		cin >> stx;
+		cin >> sty;
+		cin >> destx;
+		cin >> desty;
 
+		if (stx > -1 && sty > -1 && destx > -1 && desty > -1) {
+			board.move(stx, sty, destx, desty);
+			cg.set_board(board);
+			cg.print_board();
+		}
+		
+		
+	}
 	return 0;
 }

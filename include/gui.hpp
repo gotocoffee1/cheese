@@ -8,8 +8,12 @@ class gui
 {
 public:
 	chess_board cb;
-	gui(chess_board cb)
+	gui(chess_board& cb)
 	{
+		this->cb = cb;
+	}
+
+	void set_board(chess_board& cb) {
 		this->cb = cb;
 	}
 	virtual void print_board() = 0;
@@ -24,10 +28,10 @@ public:
 	{
 		string number_helper;
 		string border_helper;
-		string white_field = "|||||";
-		string empty_white_field = "|| ||";
-		string black_field = "     ";
-		string empty_black_field = "     ";
+		string white_field = "||||||";
+		string empty_white_field = "||  ||";
+		string black_field = "      ";
+		string empty_black_field = "      ";
 		string white_black_line;
 		string white_black_line_empty;
 		string black_white_line;
@@ -47,11 +51,29 @@ public:
 			black_white_line_empty = " |";
 			for (int i = 0; i < 8; i++)
 			{
-				number_helper += "  " + to_string(i + 1) + "  ";
-				border_helper += "-----";
-				cout << (*cb.board_field[h][i].get_piece()).get_short_name() + "\n";
-				empty_white_field = "||" + (*cb.board_field[h][i].get_piece()).get_short_name() + "||";
-				empty_black_field = "  " + (*cb.board_field[h][i].get_piece()).get_short_name() + "  ";
+				number_helper += "  " + to_string(i + 1) + "   ";
+				border_helper += "------";
+				string short_name = (*cb.board_field[h][i].get_piece()).get_short_name();
+				int int_color = (int)(*cb.board_field[h][i].get_piece()).c;
+				string string_color = " ";
+				if (int_color == 0)
+				{
+					string_color = " ";
+					empty_white_field = "||||||";
+					empty_black_field = "      ";
+				} else {
+					if (int_color > 0)
+					{
+						string_color = "w";
+					}
+					else
+					{
+						string_color = "b";
+					}
+					empty_white_field = "||" + short_name + string_color + "||";
+					empty_black_field = "  " + short_name + string_color + "  ";
+				}
+				
 
 				if (i % 2 == 0)
 				{
@@ -95,14 +117,7 @@ public:
 				board += whole_black_white_line;
 			}
 		}
-
-
-		for (int j = 8; j > 0; j = j - 2)
-		{
-		}
-
-
-
+		cout << "\n";
 		cout << number_helper << "\n";
 		cout << border_helper << "\n";
 		cout << board;

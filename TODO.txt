@@ -2,3 +2,6 @@ Robert:
 GUI
 
 Toni:
+
+logisch fängt das board noch mit 00 oben an
+callByReference für board funkt nicht?
