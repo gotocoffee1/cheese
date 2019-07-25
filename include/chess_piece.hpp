@@ -22,6 +22,7 @@ public:
 	color c;
 	string short_name = "";
 	double value = 0.0;
+	bool used_before = false;
 
 	chess_piece(color c)
 	{

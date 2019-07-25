@@ -10,6 +10,7 @@ public:
 
 	chess_board()
 	{
+		//Chess starting positions
 		for (int i = 0; i < 8; i++)
 		{
 			board_field[1][i].set_piece(new pawn(color::BLACK));
@@ -49,7 +50,7 @@ public:
 		cout << "piece " << (*board_field[sty][stx].get_piece()).get_short_name() << "\n";
 		if ((*board_field[sty][stx].get_piece()).is_move_valid(stx, sty, destx, desty))
 		{
-			board_field[desty][destx].set_piece(new pawn(color::WHITE)); //noch die eigenschaften der figur gettn
+			board_field[desty][destx].set_piece(new pawn(color::WHITE)); //TODO noch die eigenschaften der figur gettn
 			board_field[sty][stx].set_piece(new empty(color::NONE));
 			cout << "dest " << (*board_field[desty][destx].get_piece()).get_short_name() << "\n";
 			cout << "st " << (*board_field[sty][stx].get_piece()).get_short_name() << "\n";
