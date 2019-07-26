@@ -2,9 +2,9 @@
 #include "type.hpp"
 enum class color
 {
-	WHITE = 1,
+	WHITE = -1,
 	NONE = 0,
-	BLACK = -1
+	BLACK = 1
 };
 
 class chess_piece

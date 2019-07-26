@@ -54,15 +54,15 @@ public:
 				number_helper += "  " + to_string(i + 1) + "   ";
 				border_helper += "------";
 				string short_name = (*cb.board_field[h][i].get_piece()).get_short_name();
-				int int_color = (int)(*cb.board_field[h][i].get_piece()).c;
+				color color = (*cb.board_field[h][i].get_piece()).c;
 				string string_color = " ";
-				if (int_color == 0)
+				if (color == color::NONE)
 				{
 					string_color = " ";
 					empty_white_field = "||||||";
 					empty_black_field = "      ";
 				} else {
-					if (int_color > 0)
+					if (color == color::WHITE)
 					{
 						string_color = "w";
 					}
