@@ -21,7 +21,7 @@ class chess_piece
 public:
 	color c;
 	string short_name = "";
-	double value = 0.0;
+	int value = 0;
 	bool used_before = false;
 
 	chess_piece(color c)
@@ -166,7 +166,7 @@ public:
 	king(color c) : chess_piece(c)
 	{
 		short_name = "K";
-		value = std::numeric_limits<float>::infinity();
+		value = 0;
 	}
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override

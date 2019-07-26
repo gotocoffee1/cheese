@@ -35,6 +35,7 @@ int run(int argc, char** argv)
 		return 1;
 	}
 
+
 	// The window is open: could enter program loop here (see SDL_PollEvent())
 
 	//SDL_Delay(3000); // Pause execution for 3000 milliseconds, for example
