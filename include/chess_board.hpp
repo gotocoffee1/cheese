@@ -168,7 +168,8 @@ public:
 		{
 			return false;
 		}
-		if (!figure_on_field) {
+		if (!figure_on_field(stx, sty, destx, desty))
+		{
 			return false;
 		}
 		if (same_color(stx, sty, destx, desty))
@@ -221,7 +222,7 @@ public:
 
 	bool figure_on_field(int stx, int sty, int destx, int desty)
 	{
-		string short_name = (*board_field[sty][stx].get_piece()).get_short_name;
+		string short_name = (*board_field[sty][stx].get_piece()).get_short_name();
 		if (short_name == " ")
 		{
 			return false;
