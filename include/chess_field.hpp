@@ -14,6 +14,7 @@ public:
 
 	void set_piece(chess_piece* cp)
 	{
+		delete piece;
 		piece = cp;
 	}
 
