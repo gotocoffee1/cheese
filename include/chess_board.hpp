@@ -85,6 +85,10 @@ public:
 				}
 			}
 		}
+		else
+		{
+			cout << "keine Figur gewählt";
+		}
 	}
 
 	void move_piece(int stx, int sty, int destx, int desty)
@@ -167,12 +171,12 @@ public:
 	{
 		if (!coord_valid(stx, sty, destx, desty))
 		{
-			cout << "coords";
+			cout << "gleiche Koordinaten";
 			return false;
 		}
 		if (same_color(stx, sty, destx, desty))
 		{
-			cout << "color";
+			cout << "gleiche Farbe";
 			return false;
 		}
 
