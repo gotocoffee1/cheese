@@ -46,15 +46,16 @@ public:
 
 	void move(int stx, int sty, int destx, int desty)
 	{
-		if (coord_valid(stx, sty, destx, desty))
+		string short_name = (*board_field[sty][stx].get_piece()).get_short_name();
+		cout << short_name;
+		if (short_name != " ")
 		{
-			string short_name = (*board_field[sty][stx].get_piece()).get_short_name();
 			if (short_name == "P")
 			{
 			}
 			else
 			{
-				if (short_name == "N")
+				if (short_name == "H")
 				{
 					move_knight(stx, sty, destx, desty);
 				}
@@ -101,7 +102,7 @@ public:
 			}
 			else
 			{
-				if (short_name == "N")
+				if (short_name == "H")
 				{
 					old_piece = new knight(col);
 				}
@@ -166,14 +167,12 @@ public:
 	{
 		if (!coord_valid(stx, sty, destx, desty))
 		{
-			return false;
-		}
-		if (!figure_on_field(stx, sty, destx, desty))
-		{
+			cout << "coords";
 			return false;
 		}
 		if (same_color(stx, sty, destx, desty))
 		{
+			cout << "color";
 			return false;
 		}
 
@@ -188,6 +187,7 @@ public:
 		{
 			return false;
 		}
+		/*
 		if (stx > 7 || stx < 0)
 		{
 			return false;
@@ -204,6 +204,7 @@ public:
 		{
 			return false;
 		}
+		*/
 
 		return true;
 	}
@@ -211,7 +212,7 @@ public:
 	bool same_color(int stx, int sty, int destx, int desty)
 	{
 		color cst = (*board_field[sty][stx].get_piece()).c;
-		color cdest = (*board_field[destx][desty].get_piece()).c;
+		color cdest = (*board_field[desty][destx].get_piece()).c;
 		if (cst == cdest)
 		{
 			return true;

@@ -53,10 +53,14 @@ int run(int argc, char** argv)
 		cin >> destx;
 		cin >> desty;
 
-		if (stx > -1 && sty > -1 && destx > -1 && desty > -1) {
+		if (stx > -1 && sty > -1 && destx > -1 && desty > -1 &&
+			stx < 8 && sty < 8 && destx < 8 && desty < 8) {
 			board.move(stx, sty, destx, desty);
-			cg.set_board(board);
 			cg.print_board();
+		}
+		else
+		{
+			cout << "Werte nicht gültig \n";
 		}
 		
 		
