@@ -146,8 +146,7 @@ public:
 		}
 	}
 
-	void
-	move_pawn(int stx, int sty, int destx, int desty)
+	void move_pawn(int stx, int sty, int destx, int desty)
 	{
 	}
 
@@ -157,6 +156,36 @@ public:
 		{
 			if (((abs(destx - stx) == 2) && (abs(desty - sty) == 1)) ||
 				((abs(destx - stx) == 1) && (abs(desty - sty) == 2)))
+			{
+				move_piece(stx, sty, destx, desty);
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	void move_bishop(int stx, int sty, int destx, int desty)
+	{
+		if (valid_pre_conditions(stx, sty, destx, desty))
+		{
+			bool figure_in_the_way = false;
+			int y_adder = 1;
+			int x_adder = 1;
+			if (desty < sty)
+			{
+				y_adder = -1;
+			}
+			for (int i = stx; i < destx; (destx > stx) ? i++ : (i--, x_adder = -1))
+			{
+				chess_piece* piece = board_field[sty + y_adder][i + x_adder].get_piece();
+				if ((*piece).get_short_name() != " ")
+				{
+
+				}
+			}
+			if (figure_in_the_way)
 			{
 				move_piece(stx, sty, destx, desty);
 			}
@@ -225,7 +254,7 @@ public:
 		return false;
 	}
 
-	bool figure_on_field(int stx, int sty, int destx, int desty)
+	bool figure_on_field(int stx, int sty)
 	{
 		string short_name = (*board_field[sty][stx].get_piece()).get_short_name();
 		if (short_name == " ")
