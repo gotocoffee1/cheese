@@ -7,22 +7,18 @@
 class gui
 {
 public:
-	chess_board cb;
-	gui(chess_board& cb)
+	chess_board& cb;
+	gui(chess_board& cb) : cb(cb)
 	{
-		this->cb = cb;
 	}
 
-	void set_board(chess_board& cb) {
-		this->cb = cb;
-	}
 	virtual void print_board() = 0;
 };
 
 class console_gui : public gui
 {
 public:
-	console_gui(chess_board cb) : gui(cb) {}
+	console_gui(chess_board& cb) : gui(cb) {}
 
 	void print_board()
 	{

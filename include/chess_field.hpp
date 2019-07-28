@@ -1,10 +1,11 @@
 #pragma once
 #include "chess_piece.hpp"
+#include <memory>
 
 class chess_field
 {
 public:
-	chess_piece* piece;
+	std::unique_ptr < chess_piece > piece;
 
 
 	chess_field()
@@ -14,12 +15,11 @@ public:
 
 	void set_piece(chess_piece* cp)
 	{
-		delete piece;
-		piece = cp;
+		piece.reset(cp);
 	}
 
 	chess_piece* get_piece()
 	{
-		return piece;
+		return piece.get();
 	}
 };
