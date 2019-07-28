@@ -28,6 +28,10 @@ public:
 	{
 		this->c = c;
 	}
+
+	chess_piece() {
+		c = color::NONE;
+	}
 	/*
 	color get_color()
 	{
@@ -52,6 +56,16 @@ class empty : public chess_piece
 public:
 	empty(color c) : chess_piece(c)
 	{
+		set_values();
+	}
+
+	empty()
+	{
+		c = color::NONE;
+		set_values();
+	}
+
+	void set_values() {
 		short_name = " ";
 		value = 0;
 	}
@@ -73,6 +87,7 @@ public:
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
 	{
+		// noch e.p. und umwandeln
 		if (((stx == destx) && (((int)c * (desty - sty)) == 1 || ((int)c * (desty - sty) == 2))) ||
 			((desty - sty) == (int)c && abs(destx - stx) == 1))
 		{
@@ -113,7 +128,7 @@ public:
 
 	bool is_move_valid(int stx, int sty, int destx, int desty) override
 	{
-		if (abs(destx - stx) == abs(destx - sty) &&
+		if (abs(destx - stx) == abs(desty - sty) &&
 			(abs(destx - stx) != 0) && (abs(desty - sty) != 0))
 		{
 			return true;
