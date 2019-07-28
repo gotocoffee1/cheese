@@ -46,6 +46,48 @@ public:
 
 	void move(int stx, int sty, int destx, int desty)
 	{
+		if (coord_valid(stx, sty, destx, desty))
+		{
+			string short_name = (*board_field[sty][stx].get_piece()).get_short_name();
+			if (short_name == "P")
+			{
+			}
+			else
+			{
+				if (short_name == "N")
+				{
+					move_knight(stx, sty, destx, desty);
+				}
+				else
+				{
+					if (short_name == "B")
+					{
+					}
+					else
+					{
+						if (short_name == "R")
+						{
+						}
+						else
+						{
+							if (short_name == "Q")
+							{
+							}
+							else
+							{
+								if (short_name == "K")
+								{
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void move_piece(int stx, int sty, int destx, int desty)
+	{
 		cout << "is_move_valid " << (*board_field[sty][stx].get_piece()).is_move_valid(stx, sty, destx, desty) << "\n";
 		string short_name = (*board_field[sty][stx].get_piece()).get_short_name();
 		cout << "piece " << short_name << "\n";
@@ -53,46 +95,39 @@ public:
 		if ((*board_field[sty][stx].get_piece()).is_move_valid(stx, sty, destx, desty))
 		{
 			chess_piece* old_piece;
-			if (short_name == "")
+			if (short_name == "P")
 			{
-				old_piece = new empty(col);
+				old_piece = new pawn(col);
 			}
 			else
 			{
-				if (short_name == "P")
+				if (short_name == "N")
 				{
-					old_piece = new pawn(col);
+					old_piece = new knight(col);
 				}
 				else
 				{
-					if (short_name == "N")
+					if (short_name == "B")
 					{
-						old_piece = new knight(col);
+						old_piece = new bishop(col);
 					}
 					else
 					{
-						if (short_name == "B")
+						if (short_name == "R")
 						{
-							old_piece = new bishop(col);
+							old_piece = new rook(col);
 						}
 						else
 						{
-							if (short_name == "R")
+							if (short_name == "Q")
 							{
-								old_piece = new rook(col);
+								old_piece = new queen(col);
 							}
 							else
 							{
-								if (short_name == "Q")
+								if (short_name == "K")
 								{
-									old_piece = new queen(col);
-								}
-								else
-								{
-									if (short_name == "K")
-									{
-										old_piece = new king(col);
-									}
+									old_piece = new king(col);
 								}
 							}
 						}
@@ -104,5 +139,94 @@ public:
 			cout << "dest " << (*board_field[desty][destx].get_piece()).get_short_name() << "\n";
 			cout << "st " << (*board_field[sty][stx].get_piece()).get_short_name() << "\n";
 		}
+	}
+
+	void
+	move_pawn(int stx, int sty, int destx, int desty)
+	{
+	}
+
+	void move_knight(int stx, int sty, int destx, int desty)
+	{
+		if (valid_pre_conditions(stx, sty, destx, desty))
+		{
+			if (((abs(destx - stx) == 2) && (abs(desty - sty) == 1)) ||
+				((abs(destx - stx) == 1) && (abs(desty - sty) == 2)))
+			{
+				move_piece(stx, sty, destx, desty);
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	bool valid_pre_conditions(int stx, int sty, int destx, int desty)
+	{
+		if (!coord_valid(stx, sty, destx, desty))
+		{
+			return false;
+		}
+		if (!figure_on_field) {
+			return false;
+		}
+		if (same_color(stx, sty, destx, desty))
+		{
+			return false;
+		}
+
+		//König nachher im Schach?
+
+		return true;
+	}
+
+	bool coord_valid(int stx, int sty, int destx, int desty)
+	{
+		if (stx == destx && sty == desty)
+		{
+			return false;
+		}
+		if (stx > 7 || stx < 0)
+		{
+			return false;
+		}
+		if (sty > 7 || sty < 0)
+		{
+			return false;
+		}
+		if (destx > 7 || destx < 0)
+		{
+			return false;
+		}
+		if (desty > 7 || desty < 0)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool same_color(int stx, int sty, int destx, int desty)
+	{
+		color cst = (*board_field[sty][stx].get_piece()).c;
+		color cdest = (*board_field[destx][desty].get_piece()).c;
+		if (cst == cdest)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	bool figure_on_field(int stx, int sty, int destx, int desty)
+	{
+		string short_name = (*board_field[sty][stx].get_piece()).get_short_name;
+		if (short_name == " ")
+		{
+			return false;
+		}
+
+		return true;
 	}
 };
