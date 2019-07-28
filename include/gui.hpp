@@ -51,7 +51,36 @@ public:
 			black_white_line_empty = " |";
 			for (int i = 0; i < 8; i++)
 			{
-				number_helper += "  " + to_string(i + 1) + "   ";
+				string letter = "";
+				switch (i)
+				{
+				case 0:
+					letter = "A";
+					break;
+				case 1:
+					letter = "B";
+					break;
+				case 2:
+					letter = "C";
+					break;
+				case 3:
+					letter = "D";
+					break;
+				case 4:
+					letter = "E";
+					break;
+				case 5:
+					letter = "F";
+					break;
+				case 6:
+					letter = "G";
+					break;
+				case 7:
+					letter = "H";
+					break;
+				}
+				//number_helper += "  " + to_string(i + 1) + "   
+				number_helper += "  " + letter + "   ";
 				border_helper += "------";
 				string short_name = (*cb.board_field[h][i].get_piece()).get_short_name();
 				color color = (*cb.board_field[h][i].get_piece()).c;
