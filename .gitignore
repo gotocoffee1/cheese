@@ -37,3 +37,4 @@ out
 .vs
 .vscode
 build
+*.ini

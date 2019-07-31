@@ -1,5 +1,10 @@
 # cheese
 
-## Packages
+## Build
 
-```conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"```
+```
+mkdir build
+cd build
+cmake ..
+make
+```
