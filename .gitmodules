@@ -1,0 +1,3 @@
+[submodule "ext/guinea"]
+	path = ext/guinea
+	url = https://github.com/gotocoffee1/guinea
