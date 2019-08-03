@@ -24,22 +24,20 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ext/guinea/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
-# Download automatically, you can also just copy the conan.cmake file
-#if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-#message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-#    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.14/conan.cmake"
-#                "${CMAKE_BINARY_DIR}/conan.cmake")
-#endif()
-#
-#include(${CMAKE_BINARY_DIR}/conan.cmake)
-#
-#conan_cmake_run(CONANFILE conanfile.txt
-#                BASIC_SETUP)
-#
-#include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-#conan_basic_setup()
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.14/conan.cmake"
+                "${CMAKE_BINARY_DIR}/conan.cmake")
+endif()
 
-# Schließen Sie Unterprojekte ein.
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+conan_add_remote(NAME bincrafters INDEX 1
+            URL https://api.bintray.com/conan/bincrafters/public-conan)
+
+conan_cmake_run(CONANFILE conanfile.txt
+                BASIC_SETUP)
+
 add_subdirectory ("ext")
 add_subdirectory ("src")
 add_subdirectory ("app")
