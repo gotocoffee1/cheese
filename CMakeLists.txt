@@ -24,6 +24,8 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/ext/guinea/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
+add_subdirectory ("ext")
+
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
 message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
     file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.14/conan.cmake"
@@ -38,6 +40,6 @@ conan_add_remote(NAME bincrafters INDEX 1
 conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP)
 
-add_subdirectory ("ext")
+
 add_subdirectory ("src")
 add_subdirectory ("app")
