@@ -1,5 +1,6 @@
 #include "renderer.hpp"
 
+#include <stdio.h>
 
 namespace cheese
 {
@@ -7,9 +8,11 @@ namespace cheese
     {
         if (GN(Window, "Board"))
         {
+
+			if (gn::Button("Test"))
+                printf("fuck off");
             ImVec2 pos = gn::GetCursorScreenPos();
             ImDrawList* draw_list = gn::GetWindowDrawList();
-
             auto p = pos;
             for (int i = 0; i < 8; ++i)
             {
