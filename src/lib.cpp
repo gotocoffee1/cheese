@@ -7,15 +7,15 @@
 int run(int argc, char** argv)
 {
     chess_board board;
-    console_gui cg(board);
-    cg.print_board();
 
-    {
-        cheese::renderer().launch(argc, argv);
-    }
+    cheese::renderer(board).launch(argc, argv);
+
+    console_gui cg(board);
 
     while (true)
     {
+        cg.print_board();
+
         int stx = -1, sty = -1, destx = -1, desty = -1;
         cin >> stx;
         cin >> sty;
@@ -25,8 +25,7 @@ int run(int argc, char** argv)
         if (stx > -1 && sty > -1 && destx > -1 && desty > -1 &&
             stx < 8 && sty < 8 && destx < 8 && desty < 8)
         {
-            board.move(stx, sty, destx, desty);
-            cg.print_board();
+            board.move((column)stx, (row)sty, (column)destx, (row)desty);
         }
         else
         {

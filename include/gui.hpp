@@ -78,8 +78,10 @@ public:
 				//number_helper += "  " + to_string(i + 1) + "   
 				number_helper += "  " + letter + "   ";
 				border_helper += "------";
-				string short_name = (*cb.board_field[h][i].get_piece()).get_short_name();
-				color color = (*cb.board_field[h][i].get_piece()).c;
+
+				auto [fig, color] = cb.get(cb.get_mask((column)i, (row)(7 - h)));
+				auto info = get_info(fig);
+				string short_name = info.short_name ? info.short_name : "";
 				string string_color = " ";
 				if (color == color::none)
 				{
