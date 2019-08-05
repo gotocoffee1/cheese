@@ -8,6 +8,7 @@ namespace cheese
     {
     private:
     protected:
+        void on_load() override;
         void on_update(bool&) override;
     };
 }

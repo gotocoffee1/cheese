@@ -1,20 +1,182 @@
 #pragma once
+
+#include <array>
+
 #include "chess_piece.hpp"
 #include "chess_field.hpp"
+
+
+enum class column
+{
+    A = 0,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+};
+
+enum class row
+{
+    _1 = 0,
+    _2,
+    _3,
+    _4,
+    _5,
+    _6,
+    _7,
+    _8,
+};
+
+#define LINE(bit, num) (UINT64_C(bit) << ((num)*8))
 
 class chess_board
 {
 public:
     //board_field[y][x]
     chess_field board_field[8][8];
+    std::array<uint64_t, (size_t)color::num> board;
+
+    bool is(figure l, row x, column y) const
+    {
+        return board[(size_t)l] & ((UINT64_C(1) << (size_t)x) << ((size_t)y * 8));
+    }
+
+    bool is(color l, row x, column y) const
+    {
+        return board[(size_t)l] & ((UINT64_C(1) << (size_t)x) << ((size_t)y * 8));
+    }
+
+    std::tuple<figure, color> get(row x, column y) const
+    {
+        const uint64_t mask = ((UINT64_C(1) << (size_t)x) << ((size_t)y * 8));
+
+        color c;
+        if (apply(color::white, mask))
+            c = color::white;
+        else if (apply(color::black, mask))
+            c = color::black;
+        else
+            return { figure::none, color::none };
+        for (size_t i = 0; i < (size_t)figure::num; ++i)
+            if (apply(i, mask))
+                return { (figure)i, c };
+        return { figure::none, color::none };
+    }
+
+    uint64_t apply(figure layer, uint64_t mask) const
+    {
+        return board[(size_t)layer] & mask;
+    }
+
+    uint64_t apply(color layer, uint64_t mask) const
+    {
+        return board[(size_t)layer] & mask;
+    }
+
+    uint64_t apply(size_t layer, uint64_t mask) const
+    {
+        return board[layer] & mask;
+    }
 
     chess_board()
     {
+        // clang-format off
+        board[(size_t)figure::pawn] = 0
+		| LINE(0b00000000, 7)
+		| LINE(0b11111111, 6)
+		| LINE(0b00000000, 5)
+		| LINE(0b00000000, 4)
+		| LINE(0b00000000, 3)
+		| LINE(0b00000000, 2)
+		| LINE(0b11111111, 1)
+		| LINE(0b00000000, 0)
+		;
+
+        board[(size_t)figure::knight] = 0
+		| LINE(0b01000010, 7)
+		| LINE(0b00000000, 6)
+		| LINE(0b00000000, 5)
+		| LINE(0b00000000, 4)
+		| LINE(0b00000000, 3)
+		| LINE(0b00000000, 2)
+		| LINE(0b00000000, 1)
+		| LINE(0b01000010, 0)
+		;
+
+		board[(size_t)figure::bishop] = 0
+		| LINE(0b00100100, 7)
+		| LINE(0b00000000, 6)
+		| LINE(0b00000000, 5)
+		| LINE(0b00000000, 4)
+		| LINE(0b00000000, 3)
+		| LINE(0b00000000, 2)
+		| LINE(0b00000000, 1)
+		| LINE(0b00100100, 0)
+		;
+
+		board[(size_t)figure::rook] = 0
+		| LINE(0b10000001, 7)
+		| LINE(0b00000000, 6)
+		| LINE(0b00000000, 5)
+		| LINE(0b00000000, 4)
+		| LINE(0b00000000, 3)
+		| LINE(0b00000000, 2)
+		| LINE(0b00000000, 1)
+		| LINE(0b10000001, 0)
+		;
+
+		board[(size_t)figure::queen] = 0
+		| LINE(0b00010000, 7)
+		| LINE(0b00000000, 6)
+		| LINE(0b00000000, 5)
+		| LINE(0b00000000, 4)
+		| LINE(0b00000000, 3)
+		| LINE(0b00000000, 2)
+		| LINE(0b00000000, 1)
+		| LINE(0b00010000, 0)
+		;
+
+		board[(size_t)figure::king] = 0
+		| LINE(0b00001000, 7)
+		| LINE(0b00000000, 6)
+		| LINE(0b00000000, 5)
+		| LINE(0b00000000, 4)
+		| LINE(0b00000000, 3)
+		| LINE(0b00000000, 2)
+		| LINE(0b00000000, 1)
+		| LINE(0b00001000, 0)
+		;
+
+		board[(size_t)color::white] = 0
+		| LINE(0b00000000, 7)
+		| LINE(0b00000000, 6)
+		| LINE(0b00000000, 5)
+		| LINE(0b00000000, 4)
+		| LINE(0b00000000, 3)
+		| LINE(0b00000000, 2)
+		| LINE(0b11111111, 1)
+		| LINE(0b11111111, 0)
+		;
+
+		board[(size_t)color::black] = 0
+		| LINE(0b11111111, 7)
+		| LINE(0b11111111, 6)
+		| LINE(0b00000000, 5)
+		| LINE(0b00000000, 4)
+		| LINE(0b00000000, 3)
+		| LINE(0b00000000, 2)
+		| LINE(0b00000000, 1)
+		| LINE(0b00000000, 0)
+		;
+        // clang-format on
         //Chess starting positions
         for (int i = 0; i < 8; i++)
         {
-            board_field[1][i].set_piece(new pawn(color::BLACK));
-            board_field[6][i].set_piece(new pawn(color::WHITE));
+            board_field[1][i].set_piece(new pawn(color::black));
+            board_field[6][i].set_piece(new pawn(color::white));
             for (int j = 0; j < 8; j++)
             {
 
@@ -25,25 +187,25 @@ public:
             }
         }
 
-        board_field[0][0].set_piece(new rook(color::BLACK));
+        board_field[0][0].set_piece(new rook(color::black));
         board_field[1][3].set_piece(new empty());
 
-        board_field[0][1].set_piece(new knight(color::BLACK));
-        board_field[0][2].set_piece(new bishop(color::BLACK));
-        board_field[0][3].set_piece(new queen(color::BLACK));
-        board_field[0][4].set_piece(new king(color::BLACK));
-        board_field[0][5].set_piece(new bishop(color::BLACK));
-        board_field[0][6].set_piece(new knight(color::BLACK));
-        board_field[0][7].set_piece(new rook(color::BLACK));
+        board_field[0][1].set_piece(new knight(color::black));
+        board_field[0][2].set_piece(new bishop(color::black));
+        board_field[0][3].set_piece(new queen(color::black));
+        board_field[0][4].set_piece(new king(color::black));
+        board_field[0][5].set_piece(new bishop(color::black));
+        board_field[0][6].set_piece(new knight(color::black));
+        board_field[0][7].set_piece(new rook(color::black));
 
-        board_field[7][0].set_piece(new rook(color::WHITE));
-        board_field[7][1].set_piece(new knight(color::WHITE));
-        board_field[7][2].set_piece(new bishop(color::WHITE));
-        board_field[7][3].set_piece(new queen(color::WHITE));
-        board_field[7][4].set_piece(new king(color::WHITE));
-        board_field[7][5].set_piece(new bishop(color::WHITE));
-        board_field[7][6].set_piece(new knight(color::WHITE));
-        board_field[7][7].set_piece(new rook(color::WHITE));
+        board_field[7][0].set_piece(new rook(color::white));
+        board_field[7][1].set_piece(new knight(color::white));
+        board_field[7][2].set_piece(new bishop(color::white));
+        board_field[7][3].set_piece(new queen(color::white));
+        board_field[7][4].set_piece(new king(color::white));
+        board_field[7][5].set_piece(new bishop(color::white));
+        board_field[7][6].set_piece(new knight(color::white));
+        board_field[7][7].set_piece(new rook(color::white));
     }
 
     void move(int stx, int sty, int destx, int desty)
@@ -94,7 +256,7 @@ public:
         }
         else
         {
-            cout << "keine Figur gewählt";
+            cout << "keine Figur gewï¿½hlt";
         }
     }
 
@@ -277,7 +439,7 @@ public:
             return false;
         }
 
-        //König nachher im Schach?
+        //Kï¿½nig nachher im Schach?
 
         return true;
     }

@@ -81,13 +81,13 @@ public:
 				string short_name = (*cb.board_field[h][i].get_piece()).get_short_name();
 				color color = (*cb.board_field[h][i].get_piece()).c;
 				string string_color = " ";
-				if (color == color::NONE)
+				if (color == color::none)
 				{
 					string_color = " ";
 					empty_white_field = "||||||";
 					empty_black_field = "      ";
 				} else {
-					if (color == color::WHITE)
+					if (color == color::white)
 					{
 						string_color = "w";
 					}
