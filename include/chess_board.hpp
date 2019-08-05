@@ -37,25 +37,24 @@ private:
     std::array<uint64_t, (size_t)figure::num> board;
 
 public:
-
     inline const uint64_t& operator[](figure l) const
     {
-       return board[(size_t)l];
+        return board[(size_t)l];
     }
 
     inline const uint64_t& operator[](color l) const
     {
-       return board[(size_t)l];
+        return board[(size_t)l];
     }
 
     inline uint64_t& operator[](figure l)
     {
-       return board[(size_t)l];
+        return board[(size_t)l];
     }
 
     inline uint64_t& operator[](color l)
     {
-       return board[(size_t)l];
+        return board[(size_t)l];
     }
 
     std::tuple<figure, color> get(uint64_t mask) const
@@ -114,7 +113,40 @@ public:
             ;
             return moves & ~board[(size_t)col];
         }
+
+		case figure::bishop:
+		{
+			uint64_t moves = 0;
+			for (size_t i = x + 1; i <= (8 - x); i++) {
+				size_t diff = i - x;
+				moves = moves
+				| get_mask(x + diff, y + diff)
+				| get_mask(x + diff, y - diff)
+				| get_mask(x - diff, y + diff)
+				| get_mask(x - diff, y - diff)
+				;
+			}
+			return moves & ~board[(size_t)col];
+		}
+
+		case figure::rook:
+		{
+			return 0;
+		}
+
+		case figure::queen:
+		{
+			return 0;
+		}
+
+		case figure::king:
+		{
+			return 0;
+		}
+
+
         default:
+			return 0;
             return UINT64_C(0xFFFFFFFFFFFFFFFF); // all moves are valid;
         }
         // clang-format on
@@ -144,7 +176,8 @@ public:
         if (ok & target)
         {
             auto [tf, tc] = get(target);
-            clear(target, tf, tc);
+            if (tf != figure::none)
+                clear(target, tf, tc);
             clear(source, f, c);
             set(target, f, c);
         }
@@ -152,8 +185,11 @@ public:
 
     chess_board()
     {
+        star_positon();
+    }
+        
+	void star_positon(){
         // clang-format off
-
         board[(size_t)color::white] = 0
         | LINE(0b00000000, 7)
         | LINE(0b00000000, 6)
@@ -243,7 +279,7 @@ public:
         ;
         // clang-format on
     }
-/*
+    /*
     bool coord_valid(int stx, int sty, int destx, int desty)
     {
         if (stx == destx && sty == desty)
