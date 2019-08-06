@@ -346,10 +346,10 @@ public:
 
     chess_board()
     {
-        star_positon();
+        start_position();
     }
 
-    void star_positon()
+    void start_position()
     {
         // clang-format off
         board[(size_t)color::white] = 0

@@ -87,8 +87,7 @@ namespace cheese
                 p.x = pos.x;
                 p.y += square_size;
             }
-            //cout << moveset_fields << "\n";
-            draw_list->AddRectFilled({ square_size, square_size }, { 2*square_size, 2*square_size }, IM_COL32(0, 255, 0, 200));
+
 			if (moveset_fields)
             {
                 for (size_t i = 0; i <= (sizeof(moveset_fields) * 8); i++)
@@ -99,16 +98,19 @@ namespace cheese
 
                         float px = i % 8;
                         float py = 7 - i / 8;
-                        //cout << i << " " << px << " " << py << "\n";
+
                         px *= square_size;
                         py *= square_size;
+
+                        px += pos.x;
+                        py += pos.y;
                         
                         draw_list->AddRectFilled({ px, py }, { px + square_size, py + square_size }, IM_COL32(0, 255, 0, 128));
                     }
                 }
             }
             if (gn::Button("Startposition"))
-                cb.star_positon();
+                cb.start_position();
         }
     }
 }
