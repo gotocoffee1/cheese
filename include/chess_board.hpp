@@ -94,6 +94,11 @@ public:
     {
         auto x = (size_t)c;
         auto y = (size_t)r;
+        color op_col = color::white;
+        if (col == color::white)
+        {
+            op_col = color::black;
+        }
         // clang-format off
         switch (f)
         {
@@ -102,12 +107,10 @@ public:
 			uint64_t moves = 0;
 			size_t direction = -1;
 			size_t start_position = 6;
-			color op_col = color::white;
 			if (col == color::white)
 			{
 				direction = 1;
 				start_position = 1;
-				op_col = color::black;
 			}
 		
 			//normal move
@@ -167,6 +170,10 @@ public:
 				diff = i - x;
 				if (get_mask(x + diff, y + diff) & ~board[(size_t)col] && !rup_way) {
 					moves |= get_mask(x + diff, y + diff);
+					if (get_mask(x + diff, y + diff) & board[(size_t)op_col])
+					{
+						rup_way = true;
+					}
 				}
 				else {
 					rup_way = true;
@@ -174,6 +181,10 @@ public:
 
 				if (get_mask(x + diff, y - diff) & ~board[(size_t)col] && !rdown_way) {
 					moves |= get_mask(x + diff, y - diff);
+					if (get_mask(x + diff, y - diff) & board[(size_t)op_col])
+					{
+						rdown_way = true;
+					}
 				}
 				else {
 					rdown_way = true;
@@ -181,6 +192,10 @@ public:
 				
 				if (get_mask(x - diff, y + diff) & ~board[(size_t)col] && !lup_way) {
 					moves |= get_mask(x - diff, y + diff);
+					if (get_mask(x - diff, y + diff) & board[(size_t)op_col])
+					{
+						lup_way = true;
+					}
 				}
 				else {
 					lup_way = true;
@@ -188,6 +203,10 @@ public:
 				
 				if (get_mask(x - diff, y - diff) & ~board[(size_t)col] && !ldown_way) {
 					moves |= get_mask(x - diff, y - diff);
+					if (get_mask(x - diff, y - diff) & board[(size_t)op_col])
+					{
+						ldown_way = true;
+					}
 				}
 				else {
 					ldown_way = true;
@@ -198,12 +217,67 @@ public:
 
 		case figure::rook:
 		{
-			return 0;
+			uint64_t moves = 0;
+			size_t diff = 1;
+			bool up_way = false;
+			bool down_way = false;
+			bool right_way = false;
+			bool left_way = false;
+
+
+			for (size_t i = x + 1; diff < 8; i++) {
+				diff = i - x;
+				if (get_mask(x + diff, y) & ~board[(size_t)col] && !right_way) {
+					moves |= get_mask(x + diff, y);
+					if (get_mask(x + diff, y) & board[(size_t)op_col])
+					{
+						right_way = true;
+					}
+				}
+				else {
+					right_way = true;
+				}
+
+				if (get_mask(x - diff, y) & ~board[(size_t)col] && !left_way) {
+					moves |= get_mask(x - diff, y);
+					if (get_mask(x - diff, y) & board[(size_t)op_col])
+					{
+						left_way = true;
+					}
+				}
+				else {
+					left_way = true;
+				}
+				
+				if (get_mask(x, y + diff) & ~board[(size_t)col] && !up_way) {
+					moves |= get_mask(x, y + diff);
+					if (get_mask(x, y + diff) & board[(size_t)op_col])
+					{
+						up_way = true;
+					}
+				}
+				else {
+					up_way = true;
+				}
+				
+				if (get_mask(x, y - diff) & ~board[(size_t)col] && !down_way) {
+					moves |= get_mask(x, y - diff);
+					if (get_mask(x, y - diff) & board[(size_t)op_col])
+					{
+						down_way = true;
+					}
+				}
+				else {
+					down_way = true;
+				}
+			}
+			return moves & ~board[(size_t)col];
 		}
 
 		case figure::queen:
 		{
-			return 0;
+			return get_all_possible_fields(c, r, figure::bishop, col) |
+				get_all_possible_fields(c, r, figure::rook, col);
 		}
 
 		case figure::king:
