@@ -135,7 +135,7 @@ public:
 
 			//e.p.
 
-			//change
+			//change in last row
 			
             
             return moves & ~board[(size_t)col];
@@ -271,6 +271,9 @@ public:
 					down_way = true;
 				}
 			}
+
+			//castleing?
+
 			return moves & ~board[(size_t)col];
 		}
 
@@ -293,9 +296,13 @@ public:
             | get_mask(x - 1, y)
             | get_mask(x - 1, y + 1)
             ;
+
+			//castleing
+
+			//in chess?
+
             return moves & ~board[(size_t)col];
-			//castle
-			return 0;
+			
 		}
 
 
