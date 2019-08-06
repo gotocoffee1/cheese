@@ -34,8 +34,7 @@ namespace cheese
             GN(StyleVar, ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
             uint64_t moveset_fields = 0;
 
-            if (gn::Button("Test"))
-                cb.star_positon();
+
 
             for (int i = 0; i < 8; ++i)
             {
@@ -108,6 +107,8 @@ namespace cheese
                     }
                 }
             }
+            if (gn::Button("Startposition"))
+                cb.star_positon();
         }
     }
 }

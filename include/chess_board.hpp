@@ -98,7 +98,46 @@ public:
         switch (f)
         {
         case figure::pawn:
-            return 0;
+		{
+			uint64_t moves = 0;
+			size_t direction = -1;
+			size_t start_position = 6;
+			color op_col = color::white;
+			if (col == color::white)
+			{
+				direction = 1;
+				start_position = 1;
+				op_col = color::black;
+			}
+		
+			//normal move
+			if (get_mask(x, y + direction) & ~board[(size_t)color::white] & ~board[(size_t)color::black])
+			{
+				moves |= get_mask(x, y + direction);
+				if ((y == start_position) && (get_mask(x, y + 2 * direction) & ~board[(size_t)color::white] & ~board[(size_t)color::black]))
+				{
+					moves |= get_mask(x, y + 2 * direction);
+				}
+			}
+
+			//capture
+			if (get_mask(x + 1, y + direction) & board[(size_t)op_col])
+			{
+				moves |= get_mask(x + 1, y + direction);
+			}
+			if (get_mask(x - 1, y + direction) & board[(size_t)op_col])
+			{
+				moves |= get_mask(x - 1, y + direction);
+			}
+
+			//e.p.
+
+			//change
+			
+            
+            return moves & ~board[(size_t)col];
+		}
+
         case figure::knight:
         {
             const uint64_t moves = 0
@@ -117,14 +156,42 @@ public:
 		case figure::bishop:
 		{
 			uint64_t moves = 0;
-			for (size_t i = x + 1; i <= (8 - x); i++) {
-				size_t diff = i - x;
-				moves = moves
-				| get_mask(x + diff, y + diff)
-				| get_mask(x + diff, y - diff)
-				| get_mask(x - diff, y + diff)
-				| get_mask(x - diff, y - diff)
-				;
+			size_t diff = 1;
+			bool lup_way = false;
+			bool rup_way = false;
+			bool ldown_way = false;
+			bool rdown_way = false;
+
+
+			for (size_t i = x + 1; diff < 8; i++) {
+				diff = i - x;
+				if (get_mask(x + diff, y + diff) & ~board[(size_t)col] && !rup_way) {
+					moves |= get_mask(x + diff, y + diff);
+				}
+				else {
+					rup_way = true;
+				}
+
+				if (get_mask(x + diff, y - diff) & ~board[(size_t)col] && !rdown_way) {
+					moves |= get_mask(x + diff, y - diff);
+				}
+				else {
+					rdown_way = true;
+				}
+				
+				if (get_mask(x - diff, y + diff) & ~board[(size_t)col] && !lup_way) {
+					moves |= get_mask(x - diff, y + diff);
+				}
+				else {
+					lup_way = true;
+				}
+				
+				if (get_mask(x - diff, y - diff) & ~board[(size_t)col] && !ldown_way) {
+					moves |= get_mask(x - diff, y - diff);
+				}
+				else {
+					ldown_way = true;
+				}
 			}
 			return moves & ~board[(size_t)col];
 		}
@@ -187,8 +254,9 @@ public:
     {
         star_positon();
     }
-        
-	void star_positon(){
+
+    void star_positon()
+    {
         // clang-format off
         board[(size_t)color::white] = 0
         | LINE(0b00000000, 7)
