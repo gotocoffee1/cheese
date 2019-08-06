@@ -168,7 +168,7 @@ public:
 
 			for (size_t i = x + 1; diff < 8; i++) {
 				diff = i - x;
-				if (get_mask(x + diff, y + diff) & ~board[(size_t)col] && !rup_way) {
+				if (!rup_way && get_mask(x + diff, y + diff) & ~board[(size_t)col]) {
 					moves |= get_mask(x + diff, y + diff);
 					if (get_mask(x + diff, y + diff) & board[(size_t)op_col])
 					{
@@ -179,7 +179,7 @@ public:
 					rup_way = true;
 				}
 
-				if (get_mask(x + diff, y - diff) & ~board[(size_t)col] && !rdown_way) {
+				if (!rdown_way && get_mask(x + diff, y - diff) & ~board[(size_t)col]) {
 					moves |= get_mask(x + diff, y - diff);
 					if (get_mask(x + diff, y - diff) & board[(size_t)op_col])
 					{
@@ -190,7 +190,7 @@ public:
 					rdown_way = true;
 				}
 				
-				if (get_mask(x - diff, y + diff) & ~board[(size_t)col] && !lup_way) {
+				if (!lup_way && get_mask(x - diff, y + diff) & ~board[(size_t)col]) {
 					moves |= get_mask(x - diff, y + diff);
 					if (get_mask(x - diff, y + diff) & board[(size_t)op_col])
 					{
@@ -201,7 +201,7 @@ public:
 					lup_way = true;
 				}
 				
-				if (get_mask(x - diff, y - diff) & ~board[(size_t)col] && !ldown_way) {
+				if (!ldown_way && get_mask(x - diff, y - diff) & ~board[(size_t)col]) {
 					moves |= get_mask(x - diff, y - diff);
 					if (get_mask(x - diff, y - diff) & board[(size_t)op_col])
 					{
@@ -227,7 +227,7 @@ public:
 
 			for (size_t i = x + 1; diff < 8; i++) {
 				diff = i - x;
-				if (get_mask(x + diff, y) & ~board[(size_t)col] && !right_way) {
+				if (!right_way && get_mask(x + diff, y) & ~board[(size_t)col]) {
 					moves |= get_mask(x + diff, y);
 					if (get_mask(x + diff, y) & board[(size_t)op_col])
 					{
@@ -238,7 +238,7 @@ public:
 					right_way = true;
 				}
 
-				if (get_mask(x - diff, y) & ~board[(size_t)col] && !left_way) {
+				if (!left_way && get_mask(x - diff, y) & ~board[(size_t)col]) {
 					moves |= get_mask(x - diff, y);
 					if (get_mask(x - diff, y) & board[(size_t)op_col])
 					{
@@ -249,7 +249,7 @@ public:
 					left_way = true;
 				}
 				
-				if (get_mask(x, y + diff) & ~board[(size_t)col] && !up_way) {
+				if (!up_way && get_mask(x, y + diff) & ~board[(size_t)col]) {
 					moves |= get_mask(x, y + diff);
 					if (get_mask(x, y + diff) & board[(size_t)op_col])
 					{
@@ -260,7 +260,7 @@ public:
 					up_way = true;
 				}
 				
-				if (get_mask(x, y - diff) & ~board[(size_t)col] && !down_way) {
+				if (!down_way && get_mask(x, y - diff) & ~board[(size_t)col]) {
 					moves |= get_mask(x, y - diff);
 					if (get_mask(x, y - diff) & board[(size_t)op_col])
 					{
