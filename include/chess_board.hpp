@@ -282,6 +282,19 @@ public:
 
 		case figure::king:
 		{
+			//move
+			const uint64_t moves = 0
+            | get_mask(x, y + 1)
+            | get_mask(x + 1, y + 1)
+            | get_mask(x + 1, y)
+            | get_mask(x + 1, y - 1)
+            | get_mask(x, y - 1)
+            | get_mask(x - 1, y - 1)
+            | get_mask(x - 1, y)
+            | get_mask(x - 1, y + 1)
+            ;
+            return moves & ~board[(size_t)col];
+			//castle
 			return 0;
 		}
 
