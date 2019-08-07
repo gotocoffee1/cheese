@@ -84,6 +84,37 @@ public:
         return 0;
     }
 
+    inline color not_c(color col) const
+    {
+        return (color) !(size_t)col;
+    }
+
+    inline uint64_t king_in_chess(column c, row r, color col) const
+    {
+        uint64_t ret = get_mask(c, r);
+        if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & board[(size_t)not_c(col)])
+        {
+            return ret;
+        }
+        if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & board[(size_t)not_c(col)])
+        {
+            return ret;
+        }
+        if (get_all_possible_fields(c, r, figure::rook, col) & board[(size_t)figure::rook] & board[(size_t)not_c(col)])
+        {
+            return ret;
+        }
+        if (get_all_possible_fields(c, r, figure::queen, col) & board[(size_t)figure::queen] & board[(size_t)not_c(col)])
+        {
+            return ret;
+        }
+        if (get_all_possible_fields(c, r, figure::king, col) & board[(size_t)figure::king] & board[(size_t)not_c(col)])
+        {
+            return ret;
+        }
+        return 0;
+    }
+
     uint64_t get_all_possible_fields(column x, row y) const
     {
         auto [f, c] = get(get_mask(x, y));
@@ -164,7 +195,6 @@ public:
 			bool rup_way = false;
 			bool ldown_way = false;
 			bool rdown_way = false;
-
 
 			for (size_t i = x + 1; diff < 8; i++) {
 				diff = i - x;
@@ -286,7 +316,7 @@ public:
 		case figure::king:
 		{
 			//move
-			const uint64_t moves = 0
+			uint64_t moves = 0
             | get_mask(x, y + 1)
             | get_mask(x + 1, y + 1)
             | get_mask(x + 1, y)
@@ -296,7 +326,7 @@ public:
             | get_mask(x - 1, y)
             | get_mask(x - 1, y + 1)
             ;
-
+			moves &= king_in_chess((column)x, (row)(y + 1), col)
 			//castleing
 
 			//in chess?

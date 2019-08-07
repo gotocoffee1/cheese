@@ -61,10 +61,7 @@ namespace cheese
                     gn::Dummy({ square_size, square_size });
                     if (gn::IsItemHovered())
                     {
-                        auto source = cb.get_mask(cx, cy);
-                        auto [f, c] = cb.get(source);
-
-                        moveset_fields = cb.get_all_possible_fields(cx, cy, f, c);
+                        moveset_fields = cb.get_all_possible_fields(cx, cy);
                     }
 
                     if (GN(DragDropSource, ImGuiDragDropFlags_SourceAllowNullID))
@@ -92,8 +89,7 @@ namespace cheese
             {
                 for (size_t i = 0; i <= (sizeof(moveset_fields) * 8); i++)
                 {
-                    uint64_t lel = 1;
-                    if (moveset_fields & (lel << i))
+                    if (moveset_fields & (UINT64_C(1) << i))
                     {
 
                         float px = i % 8;
