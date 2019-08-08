@@ -92,10 +92,13 @@ public:
     inline uint64_t king_in_chess(column c, row r, color col) const
     {
         uint64_t ret = get_mask(c, r);
+        cout << "1 CHESS";
         if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & board[(size_t)not_c(col)])
         {
+            cout << "1.5 CHESS";
             return ret;
         }
+        cout << "2 CHESS";
         if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & board[(size_t)not_c(col)])
         {
             return ret;
@@ -326,7 +329,23 @@ public:
             | get_mask(x - 1, y)
             | get_mask(x - 1, y + 1)
             ;
-			moves &= king_in_chess((column)x, (row)(y + 1), col)
+			cout << "1 king";
+			moves &=	king_in_chess((column)(x), (row)(y + 1), col);
+			cout << "2 king";
+			moves &=	king_in_chess((column)(x + 1), (row)(y + 1), col);
+			cout << "3 king";
+			moves &=	king_in_chess((column)(x + 1), (row)(y), col);
+			cout << "4 king";
+			moves &=	king_in_chess((column)(x + 1), (row)(y - 1), col);
+			cout << "5 king";
+			moves &=	king_in_chess((column)(x), (row)(y - 1), col);
+			cout << "6 king";
+			moves &=	king_in_chess((column)(x - 1), (row)(y - 1), col);
+			cout << "7 king";
+			moves &=	king_in_chess((column)(x - 1), (row)(y), col);
+			cout << "8 king";
+			moves &=	king_in_chess((column)(x - 1), (row)(y + 1), col);
+
 			//castleing
 
 			//in chess?
