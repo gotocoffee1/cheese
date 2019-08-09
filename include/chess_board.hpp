@@ -92,13 +92,10 @@ public:
     inline uint64_t king_in_chess(column c, row r, color col) const
     {
         uint64_t ret = get_mask(c, r);
-        cout << "1 CHESS";
         if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & board[(size_t)not_c(col)])
         {
-            cout << "1.5 CHESS";
             return ret;
         }
-        cout << "2 CHESS";
         if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & board[(size_t)not_c(col)])
         {
             return ret;
@@ -111,7 +108,7 @@ public:
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::king, col) & board[(size_t)figure::king] & board[(size_t)not_c(col)])
+        //if (get_all_possible_fields(c, r, figure::king, col) & board[(size_t)figure::king] & board[(size_t)not_c(col)])
         {
             return ret;
         }
@@ -329,21 +326,13 @@ public:
             | get_mask(x - 1, y)
             | get_mask(x - 1, y + 1)
             ;
-			cout << "1 king";
 			moves &=	king_in_chess((column)(x), (row)(y + 1), col);
-			cout << "2 king";
 			moves &=	king_in_chess((column)(x + 1), (row)(y + 1), col);
-			cout << "3 king";
 			moves &=	king_in_chess((column)(x + 1), (row)(y), col);
-			cout << "4 king";
 			moves &=	king_in_chess((column)(x + 1), (row)(y - 1), col);
-			cout << "5 king";
 			moves &=	king_in_chess((column)(x), (row)(y - 1), col);
-			cout << "6 king";
 			moves &=	king_in_chess((column)(x - 1), (row)(y - 1), col);
-			cout << "7 king";
 			moves &=	king_in_chess((column)(x - 1), (row)(y), col);
-			cout << "8 king";
 			moves &=	king_in_chess((column)(x - 1), (row)(y + 1), col);
 
 			//castleing
@@ -360,6 +349,27 @@ public:
             return UINT64_C(0xFFFFFFFFFFFFFFFF); // all moves are valid;
         }
         // clang-format on
+    }
+    static void print_bit_field(uint64_t map)
+    {
+        cout << "\n";
+        string print = "0";
+        for (size_t i = 0; i < 64; i++)
+        {
+			if (map & (UINT64_C(1) << (63 - i)))
+			{
+                print = "1";
+            }
+            else
+            {
+                print = "0";
+			}
+            cout << print << " ";
+            if (i % 8 == 7)
+            {
+                cout << " \n";
+            }
+        }
     }
 
     void set(uint64_t mask, figure f, color col)
@@ -490,55 +500,4 @@ public:
         ;
         // clang-format on
     }
-    /*
-    bool coord_valid(int stx, int sty, int destx, int desty)
-    {
-        if (stx == destx && sty == desty)
-        {
-            return false;
-        }
-        
-        if (stx > 7 || stx < 0)
-        {
-            return false;
-        }
-        if (sty > 7 || sty < 0)
-        {
-            return false;
-        }
-        if (destx > 7 || destx < 0)
-        {
-            return false;
-        }
-        if (desty > 7 || desty < 0)
-        {
-            return false;
-        }
-        
-
-        return true;
-    }
-
-    bool same_color(int stx, int sty, int destx, int desty)
-    {
-        color cst = (*board_field[sty][stx].get_piece()).c;
-        color cdest = (*board_field[desty][destx].get_piece()).c;
-        if (cst == cdest)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    bool figure_on_field(int stx, int sty)
-    {
-        string short_name = (*board_field[sty][stx].get_piece()).get_short_name();
-        if (short_name == " ")
-        {
-            return false;
-        }
-
-        return true;
-    }*/
 };

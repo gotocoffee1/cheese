@@ -102,6 +102,7 @@ namespace cheese
                         py += pos.y;
                         
                         draw_list->AddRectFilled({ px, py }, { px + square_size, py + square_size }, IM_COL32(0, 255, 0, 128));
+                        chess_board::print_bit_field(moveset_fields);
                     }
                 }
             }
