@@ -72,19 +72,19 @@ public:
         return { figure::none, color::none };
     }
 
-    inline uint64_t get_mask(column x, row y) const
+    static inline uint64_t get_mask(column x, row y)
     {
         return ((UINT64_C(1) << (size_t)x) << ((size_t)y * 8));
     }
 
-    inline uint64_t get_mask(size_t x, size_t y) const
+    static inline uint64_t get_mask(size_t x, size_t y)
     {
         if (x <= (size_t)column::H && y <= (size_t)row::_8)
             return get_mask((column)x, (row)y);
         return 0;
     }
 
-    inline color not_c(color col) const
+    static inline color not_c(color col)
     {
         return (color) !(size_t)col;
     }
