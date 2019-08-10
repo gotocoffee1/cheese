@@ -87,7 +87,7 @@ namespace cheese
 
 			if (moveset_fields)
             {
-                for (size_t i = 0; i <= (sizeof(moveset_fields) * 8); i++)
+                for (size_t i = 0; i < (sizeof(moveset_fields) * 8); i++)
                 {
                     if (moveset_fields & (UINT64_C(1) << i))
                     {

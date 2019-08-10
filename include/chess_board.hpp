@@ -83,6 +83,45 @@ public:
             return get_mask((column)x, (row)y);
         return 0;
     }
+    /*
+    std::tuple<size_t, size_t> get_field(figure f, color col) const
+    {
+    }
+	*/
+    static inline void print_bit_field(uint64_t map)
+    {
+        string line0 = "";
+        string line1 = "";
+        string line2 = "";
+        string line3 = "";
+        string line4 = "";
+        string line5 = "";
+        string line6 = "";
+        string line7 = "";
+        
+        for (size_t i = 0; i < 8; i++)
+        {
+            line0 += get_one(map, i) + " ";
+            line1 += get_one(map, i + 8) + " ";
+            line2 += get_one(map, i + 16) + " ";
+            line3 += get_one(map, i + 24) + " ";
+            line4 += get_one(map, i + 32) + " ";
+            line5 += get_one(map, i + 40) + " ";
+            line6 += get_one(map, i + 48) + " ";
+            line7 += get_one(map, i + 52) + " ";
+        }
+        string line = line7 + "\n" + line6 + "\n" + line5 + "\n" + line4 + "\n" + line3 + "\n" + line2 + "\n" + line1 + "\n" + line0;
+        cout << "\n" << line;
+	}
+
+    static inline string get_one(uint64_t map, size_t i)
+    {
+        if (map & (UINT64_C(1) << (i)))
+        {
+            return "1";
+        }
+            return "0";
+    }
 
     static inline color not_c(color col)
     {
@@ -326,14 +365,43 @@ public:
             | get_mask(x - 1, y)
             | get_mask(x - 1, y + 1)
             ;
-			moves &=	king_in_chess((column)(x), (row)(y + 1), col);
-			moves &=	king_in_chess((column)(x + 1), (row)(y + 1), col);
-			moves &=	king_in_chess((column)(x + 1), (row)(y), col);
-			moves &=	king_in_chess((column)(x + 1), (row)(y - 1), col);
-			moves &=	king_in_chess((column)(x), (row)(y - 1), col);
-			moves &=	king_in_chess((column)(x - 1), (row)(y - 1), col);
-			moves &=	king_in_chess((column)(x - 1), (row)(y), col);
-			moves &=	king_in_chess((column)(x - 1), (row)(y + 1), col);
+			moves &=	king_in_chess((column)(x), (row)(y + 1), col)
+			& king_in_chess((column)(x + 1), (row)(y + 1), col)
+			& king_in_chess((column)(x + 1), (row)(y), col)
+			& king_in_chess((column)(x + 1), (row)(y - 1), col)
+			& king_in_chess((column)(x), (row)(y - 1), col)
+			& king_in_chess((column)(x - 1), (row)(y - 1), col)
+			& king_in_chess((column)(x - 1), (row)(y), col)
+			& king_in_chess((column)(x - 1), (row)(y + 1), col);
+
+			//opposition
+			uint64_t enemy_king = board[(size_t)figure::king] & board[!(size_t)col];
+			cout << "gengerischer könig position \n";
+			print_bit_field(enemy_king);
+
+			for (size_t i = 0; i < 64; i++)
+			{
+				if (enemy_king & (UINT64_C(1) << i))
+				{
+					x = i % 8;
+                    y = i / 8;
+					break;
+				}
+			}
+			cout << "x " << x << " y " << y;
+			enemy_king = 0
+            | get_mask(x, y + 1)
+            | get_mask(x + 1, y + 1)
+            | get_mask(x + 1, y)
+            | get_mask(x + 1, y - 1)
+            | get_mask(x, y - 1)
+            | get_mask(x - 1, y - 1)
+            | get_mask(x - 1, y)
+            | get_mask(x - 1, y + 1)
+            ;
+			print_bit_field(enemy_king);
+			moves &= enemy_king;
+
 
 			//castleing
 
@@ -349,27 +417,6 @@ public:
             return UINT64_C(0xFFFFFFFFFFFFFFFF); // all moves are valid;
         }
         // clang-format on
-    }
-    static void print_bit_field(uint64_t map)
-    {
-        cout << "\n";
-        string print = "0";
-        for (size_t i = 0; i < 64; i++)
-        {
-			if (map & (UINT64_C(1) << (63 - i)))
-			{
-                print = "1";
-            }
-            else
-            {
-                print = "0";
-			}
-            cout << print << " ";
-            if (i % 8 == 7)
-            {
-                cout << " \n";
-            }
-        }
     }
 
     void set(uint64_t mask, figure f, color col)
