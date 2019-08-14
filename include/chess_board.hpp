@@ -495,19 +495,26 @@ public:
     }
 
 
-    void move(column sx, row sy, column tx, row ty)
+    void move(column sxc, row syr, column txc, row tyr)
     {
-        auto source = get_mask(sx, sy);
-        auto target = get_mask(tx, ty);
+        auto source = get_mask(sxc, syr);
+        auto target = get_mask(txc, tyr);
 
         auto [f, c] = get(source);
 
-        auto ok = get_all_possible_fields(sx, sy, f, c);
+        auto ok = get_all_possible_fields(sxc, syr, f, c);
+        int sx = (int)sxc;
+        int sy = (int)syr;
+        int tx = (int)txc;
+        int ty = (int)tyr;
         if (ok & target)
         {
+			#pragma warning(suppress : 4996)
             auto [tf, tc] = get(target);
-            if (tf != figure::none)
+			if (tf != figure::none)
+			{
                 clear(target, tf, tc);
+			}
             clear(source, f, c);
             set(target, f, c);
 
@@ -517,52 +524,74 @@ public:
                 if (c == color::white)
                 {
                     white_king_moved = true;
+                    if ((tx - sx) == -2)
+                    {
+                        clear(get_mask(0, 0), figure::rook, c);
+                        set(get_mask(3, 0), figure::rook, c);
+                    }
+                    if ((tx - sx) == 2)
+                    {
+                        clear(get_mask(7, 0), figure::rook, c);
+                        set(get_mask(5, 0), figure::rook, c);
+                    }
                 }
                 else
                 {
                     black_king_moved = true;
+                    white_king_moved = true;
+                    if ((tx - sx) == -2)
+                    {
+                        clear(get_mask(0, 7), figure::rook, c);
+                        set(get_mask(3, 7), figure::rook, c);
+                    }
+                    if ((tx - sx) == 2)
+                    {
+                        clear(get_mask(7, 7), figure::rook, c);
+                        set(get_mask(5, 7), figure::rook, c);
+                    }
                 }
+	
             }
 
             //rooks moved or captured
             if (!white_a_rook_moved)
             {
-                if ((int)sy == 0 && (int)sx == 0 || (int)ty == 0 && (int)tx == 0)
+                if (sy == 0 && sx == 0 || ty == 0 && tx == 0)
                 {
                     white_a_rook_moved = true;
                 }
             }
             if (!white_h_rook_moved)
             {
-                if ((int)sy == 0 && (int)sx == 7 || (int)ty == 0 && (int)tx == 7)
+                if (sy == 0 && sx == 7 || ty == 0 && tx == 7)
                 {
                     white_h_rook_moved = true;
                 }
             }
             if (!black_a_rook_moved)
             {
-                if ((int)sy == 7 && (int)sx == 0 || (int)ty == 7 && (int)tx == 0)
+                if (sy == 7 && sx == 0 || ty == 7 && tx == 0)
                 {
                     black_a_rook_moved = true;
                 }
             }
             if (!black_h_rook_moved)
             {
-                if ((int)sy == 7 && (int)sx == 7 || (int)ty == 7 && (int)tx == 7)
+                if (sy == 7 && sx == 7 || ty == 7 && tx == 7)
                 {
                     black_h_rook_moved = true;
                 }
             }
 
             //en passant
-            if (f == figure::pawn && en_passant == (int)tx)
+            if (f == figure::pawn && en_passant == tx)
             {
                 clear(get_mask(tx, sy), f, not_col(c));
             }
 
-            if (f == figure::pawn && ((int)sy == 6 && (int)ty == 4) || ((int)sy == 1 && (int)ty == 3))
+            if (f == figure::pawn && (sy == 6 && ty == 4) || (sy == 1 && ty == 3))
             {
-                en_passant = (int)sx;
+                en_passant = sx;
             }
             else
             {
