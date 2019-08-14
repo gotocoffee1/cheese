@@ -125,7 +125,7 @@ public:
         return "0";
     }
 
-    static inline color not_c(color col)
+    static inline color not_col(color col)
     {
         return (color) !(size_t)col;
     }
@@ -133,19 +133,19 @@ public:
     inline uint64_t king_in_chess(column c, row r, color col) const
     {
         uint64_t ret = get_mask(c, r);
-        if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & board[(size_t)not_c(col)])
+        if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & board[(size_t)not_col(col)])
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & board[(size_t)not_c(col)])
+        if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & board[(size_t)not_col(col)])
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::rook, col) & board[(size_t)figure::rook] & board[(size_t)not_c(col)])
+        if (get_all_possible_fields(c, r, figure::rook, col) & board[(size_t)figure::rook] & board[(size_t)not_col(col)])
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::queen, col) & board[(size_t)figure::queen] & board[(size_t)not_c(col)])
+        if (get_all_possible_fields(c, r, figure::queen, col) & board[(size_t)figure::queen] & board[(size_t)not_col(col)])
         {
             return ret;
         }
@@ -166,11 +166,8 @@ public:
     {
         auto x = (size_t)c;
         auto y = (size_t)r;
-        color op_col = color::white;
-        if (col == color::white)
-        {
-            op_col = color::black;
-        }
+        color op_col = not_col(col);
+
         // clang-format off
         switch (f)
         {
@@ -195,7 +192,7 @@ public:
 				}
 			}
 
-			//capture
+			//capture with en passant
 			if (get_mask(x + 1, y + direction) & board[(size_t)op_col] || ((en_passant == x + 1) && (get_mask(x + 1, y) & board[(size_t)figure::pawn] & board[(size_t)op_col])))
 			{
 				moves |= get_mask(x + 1, y + direction);
@@ -205,10 +202,7 @@ public:
 				moves |= get_mask(x - 1, y + direction);
 			}
 
-			//e.p.
-
 			//change in last row
-			
             
             return moves & ~board[(size_t)col];
 		}
@@ -450,7 +444,13 @@ public:
             clear(source, f, c);
             set(target, f, c);
 
-            if (f == figure::pawn && (((int)sy == 6 && (int)ty == 4) || ((int)sy == 1 && (int)ty == 3)))
+            //en passant
+            if (f == figure::pawn && en_passant == (int)tx)
+            {
+                clear(get_mask(tx, sy), f, not_col(c));
+            }
+
+            if (f == figure::pawn && ((int)sy == 6 && (int)ty == 4) || ((int)sy == 1 && (int)ty == 3))
             {
                 en_passant = (int)sx;
             }

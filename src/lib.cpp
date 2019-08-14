@@ -12,7 +12,7 @@ int run(int argc, char** argv)
 
     console_gui cg(board);
 
-    while (true)
+    while (false)
     {
         cg.print_board();
 
