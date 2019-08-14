@@ -1,7 +1,4 @@
-Robert:
-GUI
+e.p.: theoretisch noch austrickbar wenn zweimal die gleiche farbe am zug ist
+figuren umwandeln
 
-Toni:
-
-logisch fängt das board noch mit 00 oben an
-callByReference für board funkt nicht?
+rochade:

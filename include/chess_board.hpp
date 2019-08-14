@@ -36,6 +36,12 @@ class chess_board
 private:
     std::array<uint64_t, (size_t)figure::num> board;
     int en_passant = -10;
+    bool white_king_moved = false;
+    bool black_king_moved = false;
+    bool white_a_rook_moved = false;
+    bool white_h_rook_moved = false;
+    bool black_a_rook_moved = false;
+    bool black_h_rook_moved = false;
 
 public:
     inline const uint64_t& operator[](figure l) const
@@ -113,7 +119,7 @@ public:
         }
         string line = line7 + "\n" + line6 + "\n" + line5 + "\n" + line4 + "\n" + line3 + "\n" + line2 + "\n" + line1 + "\n" + line0;
         cout << "\n"
-             << line;
+             << line << "\n";
     }
 
     static inline string get_one(uint64_t map, size_t i)
@@ -133,23 +139,32 @@ public:
     inline uint64_t king_in_chess(column c, row r, color col) const
     {
         uint64_t ret = get_mask(c, r);
-        if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & board[(size_t)not_col(col)])
+        uint64_t opp_board = board[(size_t)not_col(col)];
+
+        int direction = -1;
+        if (col == color::white)
+        {
+            direction = 1;
+		}
+
+        if ((get_mask((int)c - 1, (int)r + direction) & board[(size_t)figure::pawn] & opp_board) ||
+			(get_mask((int)c + 1, (int)r + direction) & board[(size_t)figure::pawn] & opp_board))
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & board[(size_t)not_col(col)])
+        if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & opp_board)
+        {
+			return ret;
+        }
+        if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & opp_board)
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::rook, col) & board[(size_t)figure::rook] & board[(size_t)not_col(col)])
+        if (get_all_possible_fields(c, r, figure::rook, col) & board[(size_t)figure::rook] & opp_board)
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::queen, col) & board[(size_t)figure::queen] & board[(size_t)not_col(col)])
-        {
-            return ret;
-        }
-        //if (get_all_possible_fields(c, r, figure::king, col) & board[(size_t)figure::king] & board[(size_t)not_c(col)])
+        if (get_all_possible_fields(c, r, figure::queen, col) & board[(size_t)figure::queen] & opp_board)
         {
             return ret;
         }
@@ -361,45 +376,75 @@ public:
             | get_mask(x - 1, y)
             | get_mask(x - 1, y + 1)
             ;
-			moves &=	king_in_chess((column)(x), (row)(y + 1), col)
-			& king_in_chess((column)(x + 1), (row)(y + 1), col)
-			& king_in_chess((column)(x + 1), (row)(y), col)
-			& king_in_chess((column)(x + 1), (row)(y - 1), col)
-			& king_in_chess((column)(x), (row)(y - 1), col)
-			& king_in_chess((column)(x - 1), (row)(y - 1), col)
-			& king_in_chess((column)(x - 1), (row)(y), col)
-			& king_in_chess((column)(x - 1), (row)(y + 1), col);
+			moves &= ~king_in_chess((column)(x), (row)(y + 1), col)
+			& ~king_in_chess((column)(x + 1), (row)(y + 1), col)
+			& ~king_in_chess((column)(x + 1), (row)(y), col)
+			& ~king_in_chess((column)(x + 1), (row)(y - 1), col)
+			& ~king_in_chess((column)(x), (row)(y - 1), col)
+			& ~king_in_chess((column)(x - 1), (row)(y - 1), col)
+			& ~king_in_chess((column)(x - 1), (row)(y), col)
+			& ~king_in_chess((column)(x - 1), (row)(y + 1), col);
 
 			//opposition
 			uint64_t enemy_king = board[(size_t)figure::king] & board[!(size_t)col];
-			cout << "gengerischer könig position \n";
-			print_bit_field(enemy_king);
-
+			size_t ex = 0;
+			size_t ey = 0;
 			for (size_t i = 0; i < 64; i++)
 			{
 				if (enemy_king & (UINT64_C(1) << i))
 				{
-					x = i % 8;
-                    y = i / 8;
+					ex = i % 8;
+                    ey = i / 8;
 					break;
 				}
 			}
-			cout << "x " << x << " y " << y;
 			enemy_king = 0
-            | get_mask(x, y + 1)
-            | get_mask(x + 1, y + 1)
-            | get_mask(x + 1, y)
-            | get_mask(x + 1, y - 1)
-            | get_mask(x, y - 1)
-            | get_mask(x - 1, y - 1)
-            | get_mask(x - 1, y)
-            | get_mask(x - 1, y + 1)
+            | get_mask(ex, ey + 1)
+            | get_mask(ex + 1, ey + 1)
+            | get_mask(ex + 1, ey)
+            | get_mask(ex + 1, ey - 1)
+            | get_mask(ex, ey - 1)
+            | get_mask(ex - 1, ey - 1)
+            | get_mask(ex - 1, ey)
+            | get_mask(ex - 1, ey + 1)
             ;
-			print_bit_field(enemy_king);
-			moves &= enemy_king;
+			moves &= ~enemy_king;
 
 
 			//castleing
+			if (!king_in_chess((column)(x), (row)(y), col))
+			{
+				if (col == color::white)
+				{
+					if (!white_king_moved)
+					{
+						if (!white_a_rook_moved &&
+							get_mask(1, 0) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)1, (row)0, col) &&
+							get_mask(2, 0) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)2, (row)0, col) &&
+							get_mask(3, 0) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)3, (row)0, col)
+							)
+						{
+							moves |= get_mask(2, 0);
+						}
+						if (!white_h_rook_moved &&
+							get_mask(5, 0) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)5, (row)0, col) &&
+							get_mask(6, 0) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)6, (row)0, col)
+							)
+						{
+							moves |= get_mask(6, 0);
+						}
+					}
+				}
+				else {
+
+				}
+			}
+
 
 			//in chess?
 
@@ -409,8 +454,7 @@ public:
 
 
         default:
-			return 0;
-            return UINT64_C(0xFFFFFFFFFFFFFFFF); // all moves are valid;
+			return UINT64_C(0); // no moves are valid;
         }
         // clang-format on
     }
@@ -463,7 +507,55 @@ public:
 
     chess_board()
     {
-        start_position();
+        // clang-format off
+		board[(size_t)color::white] = 0
+        | LINE(0b00000000, 7)
+        | LINE(0b00000000, 6)
+        | LINE(0b00000000, 5)
+        | LINE(0b00000000, 4)
+        | LINE(0b00000000, 3)
+        | LINE(0b00000000, 2)
+        | LINE(0b00000000, 1)
+        | LINE(0b10010001, 0)
+        ;
+		board[(size_t)color::black] = 0
+        | LINE(0b10010001, 7)
+        | LINE(0b00000000, 6)
+        | LINE(0b00000000, 5)
+        | LINE(0b00000000, 4)
+        | LINE(0b00000000, 3)
+        | LINE(0b00000000, 2)
+        | LINE(0b00000000, 1)
+        | LINE(0b00000000, 0)
+        ;
+		board[(size_t)figure::pawn] = 0;
+		board[(size_t)figure::knight] = 0;
+		board[(size_t)figure::bishop] = 0;
+		        board[(size_t)figure::rook] = 0
+        | LINE(0b10000001, 7)
+        | LINE(0b00000000, 6)
+        | LINE(0b00000000, 5)
+        | LINE(0b00000000, 4)
+        | LINE(0b00000000, 3)
+        | LINE(0b00000000, 2)
+        | LINE(0b00000000, 1)
+        | LINE(0b10000001, 0)
+        ;
+		board[(size_t)figure::queen] = 0;
+
+		board[(size_t)figure::king] = 0
+        | LINE(0b00010000, 7)
+        | LINE(0b00000000, 6)
+        | LINE(0b00000000, 5)
+        | LINE(0b00000000, 4)
+        | LINE(0b00000000, 3)
+        | LINE(0b00000000, 2)
+        | LINE(0b00000000, 1)
+        | LINE(0b00010000, 0)
+        ;
+
+        // clang-format on
+        //start_position();
     }
 
     void start_position()
