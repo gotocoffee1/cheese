@@ -35,7 +35,7 @@ class chess_board
 {
 private:
     std::array<uint64_t, (size_t)figure::num> board;
-    bool en_passant = false;
+    int en_passant = -10;
 
 public:
     inline const uint64_t& operator[](figure l) const
@@ -196,11 +196,11 @@ public:
 			}
 
 			//capture
-			if (get_mask(x + 1, y + direction) & board[(size_t)op_col] || (en_passant && (get_mask(x + 1, y) & board[(size_t)figure::pawn] & board[(size_t)op_col])))
+			if (get_mask(x + 1, y + direction) & board[(size_t)op_col] || ((en_passant == x + 1) && (get_mask(x + 1, y) & board[(size_t)figure::pawn] & board[(size_t)op_col])))
 			{
 				moves |= get_mask(x + 1, y + direction);
 			}
-			if (get_mask(x - 1, y + direction) & board[(size_t)op_col] || (en_passant && (get_mask(x - 1, y) & board[(size_t)figure::pawn] & board[(size_t)op_col])))
+			if (get_mask(x - 1, y + direction) & board[(size_t)op_col] || ((en_passant == x - 1) && (get_mask(x - 1, y) & board[(size_t)figure::pawn] & board[(size_t)op_col])))
 			{
 				moves |= get_mask(x - 1, y + direction);
 			}
@@ -452,11 +452,11 @@ public:
 
             if (f == figure::pawn && (((int)sy == 6 && (int)ty == 4) || ((int)sy == 1 && (int)ty == 3)))
             {
-                en_passant = true;
+                en_passant = (int)sx;
             }
             else
             {
-                en_passant = false;
+                en_passant = -10;
             }
         }
     }
