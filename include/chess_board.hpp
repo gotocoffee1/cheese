@@ -145,16 +145,16 @@ public:
         if (col == color::white)
         {
             direction = 1;
-		}
+        }
 
         if ((get_mask((int)c - 1, (int)r + direction) & board[(size_t)figure::pawn] & opp_board) ||
-			(get_mask((int)c + 1, (int)r + direction) & board[(size_t)figure::pawn] & opp_board))
+            (get_mask((int)c + 1, (int)r + direction) & board[(size_t)figure::pawn] & opp_board))
         {
             return ret;
         }
         if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & opp_board)
         {
-			return ret;
+            return ret;
         }
         if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & opp_board)
         {
@@ -440,8 +440,31 @@ public:
 						}
 					}
 				}
-				else {
-
+				else
+				{
+					if (!black_king_moved)
+					{
+						if (!black_a_rook_moved &&
+							get_mask(1, 7) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)1, (row)7, col) &&
+							get_mask(2, 7) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)2, (row)7, col) &&
+							get_mask(3, 7) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)3, (row)7, col)
+							)
+						{
+							moves |= get_mask(2, 7);
+						}
+						if (!black_h_rook_moved &&
+							get_mask(5, 7) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)5, (row)7, col) &&
+							get_mask(6, 7) & ~board[(size_t)col] & ~board[(size_t)op_col] &&
+							!king_in_chess((column)6, (row)7, col)
+							)
+						{
+							moves |= get_mask(6, 7);
+						}
+					}
 				}
 			}
 
@@ -488,6 +511,49 @@ public:
             clear(source, f, c);
             set(target, f, c);
 
+            //casteling
+            if (f == figure::king)
+            {
+                if (c == color::white)
+                {
+                    white_king_moved = true;
+                }
+                else
+                {
+                    black_king_moved = true;
+                }
+            }
+
+            //rooks moved or captured
+            if (!white_a_rook_moved)
+            {
+                if ((int)sy == 0 && (int)sx == 0 || (int)ty == 0 && (int)tx == 0)
+                {
+                    white_a_rook_moved = true;
+                }
+            }
+            if (!white_h_rook_moved)
+            {
+                if ((int)sy == 0 && (int)sx == 7 || (int)ty == 0 && (int)tx == 7)
+                {
+                    white_h_rook_moved = true;
+                }
+            }
+            if (!black_a_rook_moved)
+            {
+                if ((int)sy == 7 && (int)sx == 0 || (int)ty == 7 && (int)tx == 0)
+                {
+                    black_a_rook_moved = true;
+                }
+            }
+            if (!black_h_rook_moved)
+            {
+                if ((int)sy == 7 && (int)sx == 7 || (int)ty == 7 && (int)tx == 7)
+                {
+                    black_h_rook_moved = true;
+                }
+            }
+
             //en passant
             if (f == figure::pawn && en_passant == (int)tx)
             {
@@ -516,10 +582,10 @@ public:
         | LINE(0b00000000, 3)
         | LINE(0b00000000, 2)
         | LINE(0b00000000, 1)
-        | LINE(0b10010001, 0)
+        | LINE(0b10110101, 0)
         ;
 		board[(size_t)color::black] = 0
-        | LINE(0b10010001, 7)
+        | LINE(0b10110101, 7)
         | LINE(0b00000000, 6)
         | LINE(0b00000000, 5)
         | LINE(0b00000000, 4)
@@ -530,7 +596,16 @@ public:
         ;
 		board[(size_t)figure::pawn] = 0;
 		board[(size_t)figure::knight] = 0;
-		board[(size_t)figure::bishop] = 0;
+		board[(size_t)figure::bishop] = 0
+        | LINE(0b00100100, 7)
+        | LINE(0b00000000, 6)
+        | LINE(0b00000000, 5)
+        | LINE(0b00000000, 4)
+        | LINE(0b00000000, 3)
+        | LINE(0b00000000, 2)
+        | LINE(0b00000000, 1)
+        | LINE(0b00100100, 0)
+        ;
 		        board[(size_t)figure::rook] = 0
         | LINE(0b10000001, 7)
         | LINE(0b00000000, 6)
@@ -561,6 +636,13 @@ public:
     void start_position()
     {
         // clang-format off
+		white_king_moved = false;
+		black_king_moved = false;
+		white_a_rook_moved = false;
+		white_h_rook_moved = false;
+		black_a_rook_moved = false;
+		black_h_rook_moved = false;
+
         board[(size_t)color::white] = 0
         | LINE(0b00000000, 7)
         | LINE(0b00000000, 6)
