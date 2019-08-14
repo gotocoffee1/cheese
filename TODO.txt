@@ -6,5 +6,3 @@ König kann noch auf Felder ziehen die eigentlich durch eine gegnerische Figur an
 	- den König beim Erstellen seines Movesets vom Board entfernen
 
 Fesselung der Figuren (auf Schach testen)
-
-Zugwechsel

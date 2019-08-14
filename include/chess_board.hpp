@@ -35,6 +35,7 @@ class chess_board
 {
 private:
     std::array<uint64_t, (size_t)figure::num> board;
+    color turn_col = color::white;
     int en_passant = -10;
     bool white_king_moved = false;
     bool black_king_moved = false;
@@ -90,11 +91,27 @@ public:
             return get_mask((column)x, (row)y);
         return 0;
     }
-    /*
-    std::tuple<size_t, size_t> get_field(figure f, color col) const
+
+    std::array<std::tuple<column, row>, 64> get_coords_from_mask(uint64_t mask) const
     {
+        std::array<std::tuple<column, row>, 64> positive_coords;
+        size_t j = 0;
+        for (size_t i = 0; i < 63; i++)
+        {
+            if (mask & (UINT64_C(1) << i))
+            {
+
+                column px = (column)(i % 8);
+                row py = (row)(i / 8);
+                
+                std::tuple<column, row> t(px, py);
+                positive_coords[j] = t;
+                j++;
+            }
+        }
+        return positive_coords;
     }
-	*/
+
     static inline void print_bit_field(uint64_t map)
     {
         string line0 = "";
@@ -136,19 +153,36 @@ public:
         return (color) !(size_t)col;
     }
 
+	inline bool is_figure_pinned(column sx, row sy, column tx, row ty, figure f, color col)
+	{
+        bool ret = false;
+        clear(get_mask(sx, sy), f, col);
+        set(get_mask(tx, ty), f, col);
+        std::tuple<column, row> king_coords = get_coords_from_mask(board[(size_t)figure::king] & board[(size_t)col])[0];
+        column king_x = std::get<0>(king_coords);
+        row king_y = std::get<1>(king_coords);
+		if (king_in_chess(king_x, king_y, col))
+		{
+            ret = true;
+		}
+        clear(get_mask(tx, ty), f, col);
+        set(get_mask(sx, sy) , f, col);
+        return ret;
+	}
+
     inline uint64_t king_in_chess(column c, row r, color col) const
     {
         uint64_t ret = get_mask(c, r);
         uint64_t opp_board = board[(size_t)not_col(col)];
 
-        int direction = -1;
+        size_t direction = -1;
         if (col == color::white)
         {
             direction = 1;
         }
 
-        if ((get_mask((int)c - 1, (int)r + direction) & board[(size_t)figure::pawn] & opp_board) ||
-            (get_mask((int)c + 1, (int)r + direction) & board[(size_t)figure::pawn] & opp_board))
+        if ((get_mask((size_t)c - 1, (size_t)r + direction) & board[(size_t)figure::pawn] & opp_board) ||
+            (get_mask((size_t)c + 1, (size_t)r + direction) & board[(size_t)figure::pawn] & opp_board))
         {
             return ret;
         }
@@ -177,12 +211,12 @@ public:
         return get_all_possible_fields(x, y, f, c);
     }
 
-    uint64_t get_all_possible_fields(column c, row r, figure f, color col) const
+    uint64_t get_all_possible_fields(column c, row r, figure f, color col, bool pin = false) const
     {
         auto x = (size_t)c;
         auto y = (size_t)r;
-        color op_col = not_col(col);
-
+        color op_col = not_col(col);        
+		
         // clang-format off
         switch (f)
         {
@@ -502,14 +536,16 @@ public:
         int sy = (int)syr;
         int tx = (int)txc;
         int ty = (int)tyr;
-        if (ok & target)
+        if (ok & target && c == turn_col)
         {
-			#pragma warning(suppress : 4996)
+            turn_col = not_col(turn_col);
+
+#pragma warning(suppress : 4996)
             auto [tf, tc] = get(target);
-			if (tf != figure::none)
-			{
+            if (tf != figure::none)
+            {
                 clear(target, tf, tc);
-			}
+            }
             clear(source, f, c);
             set(target, f, c);
 
@@ -545,7 +581,6 @@ public:
                         set(get_mask(5, 7), figure::rook, c);
                     }
                 }
-	
             }
 
             //rooks moved or captured
@@ -597,69 +632,14 @@ public:
 
     chess_board()
     {
-        // clang-format off
-		board[(size_t)color::white] = 0
-        | LINE(0b00000000, 7)
-        | LINE(0b00000000, 6)
-        | LINE(0b00000000, 5)
-        | LINE(0b00000000, 4)
-        | LINE(0b00000000, 3)
-        | LINE(0b00000000, 2)
-        | LINE(0b00000000, 1)
-        | LINE(0b10110101, 0)
-        ;
-		board[(size_t)color::black] = 0
-        | LINE(0b10110101, 7)
-        | LINE(0b00000000, 6)
-        | LINE(0b00000000, 5)
-        | LINE(0b00000000, 4)
-        | LINE(0b00000000, 3)
-        | LINE(0b00000000, 2)
-        | LINE(0b00000000, 1)
-        | LINE(0b00000000, 0)
-        ;
-		board[(size_t)figure::pawn] = 0;
-		board[(size_t)figure::knight] = 0;
-		board[(size_t)figure::bishop] = 0
-        | LINE(0b00100100, 7)
-        | LINE(0b00000000, 6)
-        | LINE(0b00000000, 5)
-        | LINE(0b00000000, 4)
-        | LINE(0b00000000, 3)
-        | LINE(0b00000000, 2)
-        | LINE(0b00000000, 1)
-        | LINE(0b00100100, 0)
-        ;
-		        board[(size_t)figure::rook] = 0
-        | LINE(0b10000001, 7)
-        | LINE(0b00000000, 6)
-        | LINE(0b00000000, 5)
-        | LINE(0b00000000, 4)
-        | LINE(0b00000000, 3)
-        | LINE(0b00000000, 2)
-        | LINE(0b00000000, 1)
-        | LINE(0b10000001, 0)
-        ;
-		board[(size_t)figure::queen] = 0;
-
-		board[(size_t)figure::king] = 0
-        | LINE(0b00010000, 7)
-        | LINE(0b00000000, 6)
-        | LINE(0b00000000, 5)
-        | LINE(0b00000000, 4)
-        | LINE(0b00000000, 3)
-        | LINE(0b00000000, 2)
-        | LINE(0b00000000, 1)
-        | LINE(0b00010000, 0)
-        ;
-
-        // clang-format on
-        //start_position();
+        start_position();
     }
 
     void start_position()
     {
         // clang-format off
+		turn_col = color::white;
+		en_passant = -10;
 		white_king_moved = false;
 		black_king_moved = false;
 		white_a_rook_moved = false;
