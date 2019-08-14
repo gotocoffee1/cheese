@@ -351,9 +351,6 @@ public:
 					down_way = true;
 				}
 			}
-
-			//castleing?
-
 			return moves & ~board[(size_t)col];
 		}
 
@@ -376,6 +373,7 @@ public:
             | get_mask(x - 1, y)
             | get_mask(x - 1, y + 1)
             ;
+			//dont move into chess
 			moves &= ~king_in_chess((column)(x), (row)(y + 1), col)
 			& ~king_in_chess((column)(x + 1), (row)(y + 1), col)
 			& ~king_in_chess((column)(x + 1), (row)(y), col)
@@ -409,7 +407,6 @@ public:
             | get_mask(ex - 1, ey + 1)
             ;
 			moves &= ~enemy_king;
-
 
 			//castleing
 			if (!king_in_chess((column)(x), (row)(y), col))
@@ -468,11 +465,9 @@ public:
 				}
 			}
 
-
 			//in chess?
 
             return moves & ~board[(size_t)col];
-			
 		}
 
 
