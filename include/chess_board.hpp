@@ -35,6 +35,7 @@ class chess_board
 {
 private:
     std::array<uint64_t, (size_t)figure::num> board;
+    bool en_passant = false;
 
 public:
     inline const uint64_t& operator[](figure l) const
@@ -98,7 +99,7 @@ public:
         string line5 = "";
         string line6 = "";
         string line7 = "";
-        
+
         for (size_t i = 0; i < 8; i++)
         {
             line0 += get_one(map, i) + " ";
@@ -111,8 +112,9 @@ public:
             line7 += get_one(map, i + 52) + " ";
         }
         string line = line7 + "\n" + line6 + "\n" + line5 + "\n" + line4 + "\n" + line3 + "\n" + line2 + "\n" + line1 + "\n" + line0;
-        cout << "\n" << line;
-	}
+        cout << "\n"
+             << line;
+    }
 
     static inline string get_one(uint64_t map, size_t i)
     {
@@ -120,7 +122,7 @@ public:
         {
             return "1";
         }
-            return "0";
+        return "0";
     }
 
     static inline color not_c(color col)
@@ -194,11 +196,11 @@ public:
 			}
 
 			//capture
-			if (get_mask(x + 1, y + direction) & board[(size_t)op_col])
+			if (get_mask(x + 1, y + direction) & board[(size_t)op_col] || (en_passant && (get_mask(x + 1, y) & board[(size_t)figure::pawn] & board[(size_t)op_col])))
 			{
 				moves |= get_mask(x + 1, y + direction);
 			}
-			if (get_mask(x - 1, y + direction) & board[(size_t)op_col])
+			if (get_mask(x - 1, y + direction) & board[(size_t)op_col] || (en_passant && (get_mask(x - 1, y) & board[(size_t)figure::pawn] & board[(size_t)op_col])))
 			{
 				moves |= get_mask(x - 1, y + direction);
 			}
@@ -447,6 +449,15 @@ public:
                 clear(target, tf, tc);
             clear(source, f, c);
             set(target, f, c);
+
+            if (f == figure::pawn && (((int)sy == 6 && (int)ty == 4) || ((int)sy == 1 && (int)ty == 3)))
+            {
+                en_passant = true;
+            }
+            else
+            {
+                en_passant = false;
+            }
         }
     }
 
