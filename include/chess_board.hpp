@@ -103,7 +103,7 @@ public:
 
                 column px = (column)(i % 8);
                 row py = (row)(i / 8);
-                
+
                 std::tuple<column, row> t(px, py);
                 positive_coords[j] = t;
                 j++;
@@ -153,22 +153,27 @@ public:
         return (color) !(size_t)col;
     }
 
-	inline bool is_figure_pinned(column sx, row sy, column tx, row ty, figure f, color col)
-	{
+    inline uint64_t add_valid_fields_to_moveset(uint64_t moveset, uint64_t mask)
+    {
+        //is_figure_pinned
+    }
+
+    inline bool is_figure_pinned(column sx, row sy, column tx, row ty, figure f, color col)
+    {
         bool ret = false;
         clear(get_mask(sx, sy), f, col);
         set(get_mask(tx, ty), f, col);
         std::tuple<column, row> king_coords = get_coords_from_mask(board[(size_t)figure::king] & board[(size_t)col])[0];
         column king_x = std::get<0>(king_coords);
         row king_y = std::get<1>(king_coords);
-		if (king_in_chess(king_x, king_y, col))
-		{
+        if (king_in_chess(king_x, king_y, col))
+        {
             ret = true;
-		}
+        }
         clear(get_mask(tx, ty), f, col);
-        set(get_mask(sx, sy) , f, col);
+        set(get_mask(sx, sy), f, col);
         return ret;
-	}
+    }
 
     inline uint64_t king_in_chess(column c, row r, color col) const
     {
@@ -186,19 +191,19 @@ public:
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::knight, col) & board[(size_t)figure::knight] & opp_board)
+        if (get_all_possible_fields(c, r, figure::knight, col, false) & board[(size_t)figure::knight] & opp_board)
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::bishop, col) & board[(size_t)figure::bishop] & opp_board)
+        if (get_all_possible_fields(c, r, figure::bishop, col, false) & board[(size_t)figure::bishop] & opp_board)
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::rook, col) & board[(size_t)figure::rook] & opp_board)
+        if (get_all_possible_fields(c, r, figure::rook, col, false) & board[(size_t)figure::rook] & opp_board)
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::queen, col) & board[(size_t)figure::queen] & opp_board)
+        if (get_all_possible_fields(c, r, figure::queen, col, false) & board[(size_t)figure::queen] & opp_board)
         {
             return ret;
         }
@@ -211,12 +216,12 @@ public:
         return get_all_possible_fields(x, y, f, c);
     }
 
-    uint64_t get_all_possible_fields(column c, row r, figure f, color col, bool pin = false) const
+    uint64_t get_all_possible_fields(column c, row r, figure f, color col, bool pin = true) const
     {
         auto x = (size_t)c;
         auto y = (size_t)r;
-        color op_col = not_col(col);        
-		
+        color op_col = not_col(col);
+
         // clang-format off
         switch (f)
         {
