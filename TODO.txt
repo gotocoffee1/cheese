@@ -1,4 +1,5 @@
 e.p.: theoretisch noch austrickbar wenn zweimal die gleiche Farbe am Zug ist
+noch nicht ziehbar wenn das schach von dem gegnerischen bauern, welcher 2 felder zieht verursacht wird
 Figuren umwandeln
 
 Rochade: geht auch noch, auch wenn kein Turm auf dem Feld steht
