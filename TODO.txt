@@ -1,6 +1,8 @@
 e.p.: theoretisch noch austrickbar wenn zweimal die gleiche Farbe am Zug ist
 Figuren umwandeln
 
+Rochade: geht auch noch, auch wenn kein Turm auf dem Feld steht
+in opposition rochierbar
 König kann noch auf Felder ziehen die eigentlich durch eine gegnerische Figur angegriffen werden, aber vom König verdeckt werden
 	mögliche Lösungen:
 	- den König beim Erstellen seines Movesets vom Board entfernen
