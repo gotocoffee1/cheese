@@ -1,11 +1,14 @@
-e.p.: theoretisch noch austrickbar wenn zweimal die gleiche Farbe am Zug ist
-noch nicht ziehbar wenn das schach von dem gegnerischen bauern, welcher 2 felder zieht verursacht wird
-Figuren umwandeln
+Bauer:
+	e.p.:	theoretisch noch austrickbar wenn zweimal die gleiche Farbe am Zug ist
+		noch nicht ziehbar wenn das schach von dem gegnerischen bauern, welcher 2 felder zieht verursacht wird
+	schlagen: funktioniert nicht richtig um schach zu verhindern, wenn Dame (nur mit Dame getestet) direkt neben König steht und Schach gibt
+	Figuren umwandeln: fehlt
 
-Rochade: geht auch noch, auch wenn kein Turm auf dem Feld steht
-in opposition rochierbar
-König kann noch auf Felder ziehen die eigentlich durch eine gegnerische Figur angegriffen werden, aber vom König verdeckt werden
-	mögliche Lösungen:
-	- den König beim Erstellen seines Movesets vom Board entfernen
+König:
+	Rochade:	geht auch noch, auch wenn kein Turm auf dem Feld steht
+			in opposition rochierbar
+	Schach: kann noch auf Felder ziehen die eigentlich durch eine gegnerische Figur angegriffen werden, aber vom König verdeckt werden
+		mögliche Lösungen:
+		- den König beim Erstellen seines Movesets vom Board entfernen
 
 Fesselung der Figuren (auf Schach testen)

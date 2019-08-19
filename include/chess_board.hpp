@@ -194,27 +194,22 @@ public:
         if ((get_mask((size_t)c - 1, (size_t)r + direction) & b[(size_t)figure::pawn] & opp_board) ||
             (get_mask((size_t)c + 1, (size_t)r + direction) & b[(size_t)figure::pawn] & opp_board))
         {
-            cout << "\n pawn gives chess \n";
             return ret;
         }
         if (get_all_possible_fields(c, r, figure::knight, col, b, false) & b[(size_t)figure::knight] & opp_board)
         {
-            cout << "\n knight gives chess \n";
             return ret;
         }
         if (get_all_possible_fields(c, r, figure::bishop, col, b, false) & b[(size_t)figure::bishop] & opp_board)
         {
-            cout << "\n bishop gives chess \n";
             return ret;
         }
         if (get_all_possible_fields(c, r, figure::rook, col, b, false) & b[(size_t)figure::rook] & opp_board)
         {
-            cout << "\n rook gives chess \n";
             return ret;
         }
         if (get_all_possible_fields(c, r, figure::queen, col, b, false) & b[(size_t)figure::queen] & opp_board)
         {
-            cout << "\n queen gives chess \n";
             return ret;
         }
         return UINT64_C(0);
