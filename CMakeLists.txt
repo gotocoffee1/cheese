@@ -40,6 +40,10 @@ conan_add_remote(NAME bincrafters INDEX 1
 conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP)
 
-
+                
 add_subdirectory ("src")
+
+enable_testing()
+add_subdirectory ("test")
+
 add_subdirectory ("app")
