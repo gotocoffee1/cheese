@@ -33,7 +33,7 @@ enum class row
 class chess_board
 {
 private:
-    array<uint64_t, (size_t)figure::num> board;
+    
     color turn_col = color::white;
 
     //1-8: white pawn moved 2 fields
@@ -47,6 +47,7 @@ private:
     bool black_h_rook_moved = true;
 
 public:
+    array<uint64_t, (size_t)figure::num> board;
     inline const uint64_t& operator[](figure l) const
     {
         return board[(size_t)l];
@@ -285,7 +286,7 @@ public:
 						moves |= get_mask(x, y + 2 * direction);
 				}
 			}
-
+			//starts with 1 and not with 0
 			int en_passant_l = en_passant * -direction;
 			//capture with en passant
 			if (get_mask(x + 1, y + direction) & b[(size_t)op_col] || ((en_passant_l == x + 2) && (get_mask(x + 1, y) & b[(size_t)figure::pawn] & b[(size_t)op_col])))
@@ -568,7 +569,7 @@ public:
     {
         auto source = get_mask(sxc, syr);
         auto target = get_mask(txc, tyr);
-        
+
         tuple<figure, color> fc = get(source);
         figure f = std::get<0>(fc);
         color c = std::get<1>(fc);
@@ -582,7 +583,7 @@ public:
             int ty = (int)tyr;
             turn_col = not_col(turn_col);
 
-            tuple<figure, color> tfc = get(source);
+            tuple<figure, color> tfc = get(target);
             figure tf = std::get<0>(tfc);
             color tc = std::get<1>(tfc);
             if (tf != figure::none)

@@ -95,14 +95,18 @@ namespace cheese
                         float px = i % 8;
                         float py = 7 - i / 8;
 
+						ImU32 paint_col = IM_COL32(0, 255, 0, 128);
+                        if (chess_board::get_mask((size_t)px, (size_t)(i / 8)) & cb.board[(size_t)color::white] ||
+                            chess_board::get_mask((size_t)px, (size_t)(i / 8)) & cb.board[(size_t)color::black])
+                            paint_col = IM_COL32(255, 0, 0, 128);
+
                         px *= square_size;
                         py *= square_size;
 
                         px += pos.x;
                         py += pos.y;
-                        
-                        draw_list->AddRectFilled({ px, py }, { px + square_size, py + square_size }, IM_COL32(0, 255, 0, 128));
-                        //chess_board::print_bit_field(moveset_fields);
+     
+                        draw_list->AddRectFilled({ px, py }, { px + square_size, py + square_size }, paint_col);
                     }
                 }
             }
