@@ -439,15 +439,20 @@ public:
             | get_mask(x - 1, y)
             | get_mask(x - 1, y + 1)
             ;
+
 			//dont move into chess
-			moves &= ~king_in_chess((column)(x), (row)(y + 1), col)
-			& ~king_in_chess((column)(x + 1), (row)(y + 1), col)
-			& ~king_in_chess((column)(x + 1), (row)(y), col)
-			& ~king_in_chess((column)(x + 1), (row)(y - 1), col)
-			& ~king_in_chess((column)(x), (row)(y - 1), col)
-			& ~king_in_chess((column)(x - 1), (row)(y - 1), col)
-			& ~king_in_chess((column)(x - 1), (row)(y), col)
-			& ~king_in_chess((column)(x - 1), (row)(y + 1), col);
+			b[(size_t)f] &= ~get_mask(x, y);
+			b[(size_t)col] &= ~get_mask(x, y);
+			moves &= ~king_in_chess((column)(x), (row)(y + 1), col, b)
+			& ~king_in_chess((column)(x + 1), (row)(y + 1), col, b)
+			& ~king_in_chess((column)(x + 1), (row)(y), col, b)
+			& ~king_in_chess((column)(x + 1), (row)(y - 1), col, b)
+			& ~king_in_chess((column)(x), (row)(y - 1), col, b)
+			& ~king_in_chess((column)(x - 1), (row)(y - 1), col, b)
+			& ~king_in_chess((column)(x - 1), (row)(y), col, b)
+			& ~king_in_chess((column)(x - 1), (row)(y + 1), col, b);
+			b[(size_t)f] |= get_mask(x, y);
+			b[(size_t)col] |= get_mask(x, y);
 
 			//opposition
 			uint64_t enemy_king = b[(size_t)figure::king] & b[!(size_t)col];
