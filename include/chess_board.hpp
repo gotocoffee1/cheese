@@ -486,7 +486,7 @@ public:
 				{
 					if (!white_king_moved)
 					{
-						if (!white_a_rook_moved &&
+						if (!white_a_rook_moved && get_mask(0, 0) & b[(size_t)col] & b[(size_t)figure::rook] &&
 							get_mask(1, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
 							!king_in_chess((column)1, (row)0, col) &&
 							get_mask(2, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
@@ -497,7 +497,7 @@ public:
 						{
 							moves |= get_mask(2, 0);
 						}
-						if (!white_h_rook_moved &&
+						if (!white_h_rook_moved && get_mask(7, 0) & b[(size_t)col] & b[(size_t)figure::rook] &&
 							get_mask(5, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
 							!king_in_chess((column)5, (row)0, col) &&
 							get_mask(6, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
@@ -512,7 +512,7 @@ public:
 				{
 					if (!black_king_moved)
 					{
-						if (!black_a_rook_moved &&
+						if (!black_a_rook_moved &&  get_mask(0, 7) & b[(size_t)col] & b[(size_t)figure::rook] &&
 							get_mask(1, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
 							!king_in_chess((column)1, (row)7, col) &&
 							get_mask(2, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
@@ -523,7 +523,7 @@ public:
 						{
 							moves |= get_mask(2, 7);
 						}
-						if (!black_h_rook_moved &&
+						if (!black_h_rook_moved &&  get_mask(7, 7) & b[(size_t)col] & b[(size_t)figure::rook] &&
 							get_mask(5, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
 							!king_in_chess((column)5, (row)7, col) &&
 							get_mask(6, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
@@ -683,7 +683,7 @@ public:
         | LINE(0b00000000, 3)
         | LINE(0b00000000, 2)
         | LINE(0b11111111, 1)
-        | LINE(0b00011000, 0)
+        | LINE(0b10011001, 0)
         ;
 
         board[(size_t)color::black] = 0
@@ -708,7 +708,16 @@ public:
 		board[(size_t)figure::knight] = 0;
 		board[(size_t)figure::bishop] = 0;
 
-		board[(size_t)figure::rook] = 0;
+		board[(size_t)figure::rook] = 0
+		| LINE(0b00000000, 7)
+        | LINE(0b00000000, 6)
+        | LINE(0b00000000, 5)
+        | LINE(0b00000000, 4)
+        | LINE(0b00000000, 3)
+        | LINE(0b00000000, 2)
+        | LINE(0b00000000, 1)
+        | LINE(0b10000001, 0)
+			;
 
 		board[(size_t)figure::queen] = 0
         | LINE(0b00001000, 7)

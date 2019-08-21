@@ -2,6 +2,3 @@ Bauer:
 	e.p.:	noch nicht ziehbar wenn das schach von dem gegnerischen bauern, welcher 2 felder zieht verursacht wird
 	schlagen: funktioniert nicht richtig um schach zu verhindern, wenn Dame (nur mit Dame getestet) direkt neben König steht und Schach gibt
 	Figuren umwandeln: fehlt
-
-König:
-	Rochade:	geht auch noch, auch wenn kein Turm auf dem Feld steht
