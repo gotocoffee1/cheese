@@ -212,6 +212,26 @@ public:
         {
             return ret;
         }
+
+        //opposition
+        uint64_t enemy_king = b[(size_t)figure::king] & b[(size_t)not_col(col)];
+        size_t ex = 0;
+        size_t ey = 0;
+        for (size_t i = 0; i < 64; i++)
+        {
+            if (enemy_king & (UINT64_C(1) << i))
+            {
+                ex = i % 8;
+                ey = i / 8;
+                break;
+            }
+        }
+        enemy_king = 0 | get_mask(ex, ey + 1) | get_mask(ex + 1, ey + 1) | get_mask(ex + 1, ey) | get_mask(ex + 1, ey - 1) | get_mask(ex, ey - 1) | get_mask(ex - 1, ey - 1) | get_mask(ex - 1, ey) | get_mask(ex - 1, ey + 1);
+		if (ret & enemy_king)
+		{
+            return ret;
+		}
+
         return UINT64_C(0);
     }
 
@@ -453,31 +473,6 @@ public:
 			& ~king_in_chess((column)(x - 1), (row)(y + 1), col, b);
 			b[(size_t)f] |= get_mask(x, y);
 			b[(size_t)col] |= get_mask(x, y);
-
-			//opposition
-			uint64_t enemy_king = b[(size_t)figure::king] & b[!(size_t)col];
-			size_t ex = 0;
-			size_t ey = 0;
-			for (size_t i = 0; i < 64; i++)
-			{
-				if (enemy_king & (UINT64_C(1) << i))
-				{
-					ex = i % 8;
-                    ey = i / 8;
-					break;
-				}
-			}
-			enemy_king = 0
-            | get_mask(ex, ey + 1)
-            | get_mask(ex + 1, ey + 1)
-            | get_mask(ex + 1, ey)
-            | get_mask(ex + 1, ey - 1)
-            | get_mask(ex, ey - 1)
-            | get_mask(ex - 1, ey - 1)
-            | get_mask(ex - 1, ey)
-            | get_mask(ex - 1, ey + 1)
-            ;
-			moves &= ~enemy_king;
 
 			//castleing
 			if (!king_in_chess((column)(x), (row)(y), col))

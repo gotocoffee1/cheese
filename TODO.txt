@@ -7,8 +7,3 @@ Bauer:
 König:
 	Rochade:	geht auch noch, auch wenn kein Turm auf dem Feld steht
 			in opposition rochierbar
-	Schach: kann noch auf Felder ziehen die eigentlich durch eine gegnerische Figur angegriffen werden, aber vom König verdeckt werden
-		mögliche Lösungen:
-		- den König beim Erstellen seines Movesets vom Board entfernen
-
-Fesselung der Figuren (auf Schach testen)
