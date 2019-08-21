@@ -1,8 +1,7 @@
 #pragma once
 
-#include <array>
 #include <tuple>
-
+#include <array>
 #include "chess_piece.hpp"
 
 enum class column
@@ -34,7 +33,7 @@ enum class row
 class chess_board
 {
 private:
-    std::array<uint64_t, (size_t)figure::num> board;
+    array<uint64_t, (size_t)figure::num> board;
     color turn_col = color::white;
 
     //1-8: white pawn moved 2 fields
@@ -68,7 +67,7 @@ public:
         return board[(size_t)l];
     }
 
-    std::tuple<figure, color> get(uint64_t mask) const
+    tuple<figure, color> get(uint64_t mask) const
     {
         color c;
         if ((*this)[color::white] & mask)
@@ -95,9 +94,9 @@ public:
         return 0;
     }
 
-    std::array<std::tuple<column, row>, 64> get_coords_from_mask(uint64_t mask) const
+    array<tuple<column, row>, 64> get_coords_from_mask(uint64_t mask) const
     {
-        std::array<std::tuple<column, row>, 64> positive_coords;
+        array<tuple<column, row>, 64> positive_coords;
         size_t j = 0;
         for (size_t i = 0; i < 63; i++)
         {
@@ -107,7 +106,7 @@ public:
                 column px = (column)(i % 8);
                 row py = (row)(i / 8);
 
-                std::tuple<column, row> t(px, py);
+                tuple<column, row> t(px, py);
                 positive_coords[j] = t;
                 j++;
             }
@@ -157,33 +156,40 @@ public:
 
     inline bool is_figure_pinned(column sx, row sy, column tx, row ty, figure f, color col) const
     {
-        bool ret = false;
-        std::array<uint64_t, (size_t)figure::num> b = board;
-        b[(size_t)f] &= ~get_mask(sx, sy);
-        b[(size_t)col] &= ~get_mask(sx, sy);
-        b[(size_t)f] |= get_mask(tx, ty);
-        b[(size_t)col] |= get_mask(tx, ty);
+        array<uint64_t, (size_t)figure::num> b = board;
+        //auslagern?
+        uint64_t source = get_mask(sx, sy);
+        uint64_t target = get_mask(tx, ty);
+        b[(size_t)f] &= ~source;
+        b[(size_t)col] &= ~source;
 
-        std::tuple<column, row> king_coords = get_coords_from_mask(b[(size_t)figure::king] & b[(size_t)col])[0];
+        tuple<figure, color> tf = get(target);
+        if (std::get<0>(tf) != figure::none)
+        {
+            b[(size_t)std::get<0>(tf)] &= ~target;
+            b[(size_t)std::get<1>(tf)] &= ~target;
+        }
+
+        b[(size_t)f] |= target;
+        b[(size_t)col] |= target;
+
+        tuple<column, row> king_coords = get_coords_from_mask(b[(size_t)figure::king] & b[(size_t)col])[0];
         column king_x = std::get<0>(king_coords);
         row king_y = std::get<1>(king_coords);
+        bool ret = false;
         if (king_in_chess(king_x, king_y, col, b))
         {
             ret = true;
         }
 
-        b[(size_t)f] &= ~get_mask(tx, ty);
-        b[(size_t)col] &= ~get_mask(tx, ty);
-        b[(size_t)f] |= get_mask(sx, sy);
-        b[(size_t)col] |= get_mask(sx, sy);
         return ret;
     }
+
     inline uint64_t king_in_chess(column c, row r, color col) const
     {
         return king_in_chess(c, r, col, board);
     }
-
-    inline uint64_t king_in_chess(column c, row r, color col, std::array<uint64_t, (size_t)figure::num> b) const
+    inline uint64_t king_in_chess(column c, row r, color col, array<uint64_t, (size_t)figure::num> b) const
     {
         uint64_t ret = get_mask(c, r);
         uint64_t opp_board = b[(size_t)not_col(col)];
@@ -248,7 +254,7 @@ public:
     {
         return get_all_possible_fields(c, r, f, col, board, pin);
     }
-    uint64_t get_all_possible_fields(column c, row r, figure f, color col, std::array<uint64_t, (size_t)figure::num> b, bool pin = true) const
+    uint64_t get_all_possible_fields(column c, row r, figure f, color col, array<uint64_t, (size_t)figure::num> b, bool pin = true) const
     {
         auto x = (size_t)c;
         auto y = (size_t)r;
@@ -259,7 +265,6 @@ public:
         {
         case figure::pawn:
 		{
-			
 			uint64_t moves = 0;
 			int direction = -1;
 			size_t start_position = 6;
@@ -563,16 +568,15 @@ public:
     {
         auto source = get_mask(sxc, syr);
         auto target = get_mask(txc, tyr);
-
         auto [f, c] = get(source);
-
         auto ok = get_all_possible_fields(sxc, syr, f, c, true);
-        int sx = (int)sxc;
-        int sy = (int)syr;
-        int tx = (int)txc;
-        int ty = (int)tyr;
+
         if (ok & target) //&& c == turn_col)
         {
+            int sx = (int)sxc;
+            int sy = (int)syr;
+            int tx = (int)txc;
+            int ty = (int)tyr;
             turn_col = not_col(turn_col);
 
             auto [tf, tc] = get(target);
@@ -651,10 +655,10 @@ public:
             if (f == figure::pawn)
             {
                 size_t dir = -1;
-				if (c == color::white)
-				{
+                if (c == color::white)
+                {
                     dir = 1;
-				}
+                }
                 if ((abs((int)en_passant) - 1) == tx)
                 {
                     clear(get_mask(tx, sy), f, not_col(c));
