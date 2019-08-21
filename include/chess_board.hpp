@@ -246,8 +246,8 @@ public:
 
     uint64_t get_all_possible_fields(column x, row y) const
     {
-        auto [f, c] = get(get_mask(x, y));
-        return get_all_possible_fields(x, y, f, c, true);
+        tuple<figure, color> fc = get(get_mask(x, y));
+        return get_all_possible_fields(x, y, std::get<0>(fc), std::get<1>(fc), true);
     }
 
     uint64_t get_all_possible_fields(column c, row r, figure f, color col, bool pin = true) const
@@ -568,7 +568,10 @@ public:
     {
         auto source = get_mask(sxc, syr);
         auto target = get_mask(txc, tyr);
-        auto [f, c] = get(source);
+        
+        tuple<figure, color> fc = get(source);
+        figure f = std::get<0>(fc);
+        color c = std::get<1>(fc);
         auto ok = get_all_possible_fields(sxc, syr, f, c, true);
 
         if (ok & target) //&& c == turn_col)
@@ -579,7 +582,9 @@ public:
             int ty = (int)tyr;
             turn_col = not_col(turn_col);
 
-            auto [tf, tc] = get(target);
+            tuple<figure, color> tfc = get(source);
+            figure tf = std::get<0>(tfc);
+            color tc = std::get<1>(tfc);
             if (tf != figure::none)
             {
                 clear(target, tf, tc);
