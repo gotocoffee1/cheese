@@ -36,6 +36,9 @@ class chess_board
 private:
     std::array<uint64_t, (size_t)figure::num> board;
     color turn_col = color::white;
+
+    //1-8: white pawn moved 2 fields
+    //-1--8 black pawn moved 2 fields
     int en_passant = -10;
     bool white_king_moved = true;
     bool black_king_moved = true;
@@ -185,7 +188,7 @@ public:
         uint64_t ret = get_mask(c, r);
         uint64_t opp_board = b[(size_t)not_col(col)];
 
-        size_t direction = -1;
+        int direction = -1;
         if (col == color::white)
         {
             direction = 1;
@@ -227,10 +230,10 @@ public:
             }
         }
         enemy_king = 0 | get_mask(ex, ey + 1) | get_mask(ex + 1, ey + 1) | get_mask(ex + 1, ey) | get_mask(ex + 1, ey - 1) | get_mask(ex, ey - 1) | get_mask(ex - 1, ey - 1) | get_mask(ex - 1, ey) | get_mask(ex - 1, ey + 1);
-		if (ret & enemy_king)
-		{
+        if (ret & enemy_king)
+        {
             return ret;
-		}
+        }
 
         return UINT64_C(0);
     }
@@ -256,15 +259,16 @@ public:
         {
         case figure::pawn:
 		{
+			
 			uint64_t moves = 0;
-			size_t direction = -1;
+			int direction = -1;
 			size_t start_position = 6;
 			if (col == color::white)
 			{
 				direction = 1;
 				start_position = 1;
 			}
-		
+			
 			//normal move
 			if (get_mask(x, y + direction) & ~b[(size_t)color::white] & ~b[(size_t)color::black])
 			{
@@ -277,13 +281,14 @@ public:
 				}
 			}
 
+			int en_passant_l = en_passant * -direction;
 			//capture with en passant
-			if (get_mask(x + 1, y + direction) & b[(size_t)op_col] || ((en_passant == x + 1) && (get_mask(x + 1, y) & b[(size_t)figure::pawn] & b[(size_t)op_col])))
+			if (get_mask(x + 1, y + direction) & b[(size_t)op_col] || ((en_passant_l == x + 2) && (get_mask(x + 1, y) & b[(size_t)figure::pawn] & b[(size_t)op_col])))
 			{
 				if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x + 1), (row)(y + direction), f, col))
 					moves |= get_mask(x + 1, y + direction);
 			}
-			if (get_mask(x - 1, y + direction) & b[(size_t)op_col] || ((en_passant == x - 1) && (get_mask(x - 1, y) & b[(size_t)figure::pawn] & b[(size_t)op_col])))
+			if (get_mask(x - 1, y + direction) & b[(size_t)op_col] || ((en_passant_l == x) && (get_mask(x - 1, y) & b[(size_t)figure::pawn] & b[(size_t)op_col])))
 			{
 				if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x - 1), (row)(y + direction), f, col))
 					moves |= get_mask(x - 1, y + direction);
@@ -531,7 +536,6 @@ public:
 				}
 			}
 
-			//in chess?
             return moves & ~b[(size_t)col];
 		}
 
@@ -644,18 +648,26 @@ public:
             }
 
             //en passant
-            if (f == figure::pawn && en_passant == tx)
+            if (f == figure::pawn)
             {
-                clear(get_mask(tx, sy), f, not_col(c));
-            }
+                size_t dir = -1;
+				if (c == color::white)
+				{
+                    dir = 1;
+				}
+                if ((abs((int)en_passant) - 1) == tx)
+                {
+                    clear(get_mask(tx, sy), f, not_col(c));
+                }
 
-            if (f == figure::pawn && (sy == 6 && ty == 4) || (sy == 1 && ty == 3))
-            {
-                en_passant = sx;
-            }
-            else
-            {
-                en_passant = -10;
+                if ((sy == 6 && ty == 4) || (sy == 1 && ty == 3))
+                {
+                    en_passant = dir * (sx + 1);
+                }
+                else
+                {
+                    en_passant = -10;
+                }
             }
         }
     }
