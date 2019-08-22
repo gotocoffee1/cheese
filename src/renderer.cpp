@@ -96,8 +96,8 @@ namespace cheese
                         float py = 7 - i / 8;
 
 						ImU32 paint_col = IM_COL32(0, 255, 0, 128);
-                        if (chess_board::get_mask((size_t)px, (size_t)(i / 8)) & cb.board[(size_t)color::white] ||
-                            chess_board::get_mask((size_t)px, (size_t)(i / 8)) & cb.board[(size_t)color::black])
+                        if (chess_board::get_mask((size_t)px, (size_t)(i / 8)) & cb[color::white] ||
+                            chess_board::get_mask((size_t)px, (size_t)(i / 8)) & cb[color::black])
                             paint_col = IM_COL32(255, 0, 0, 128);
 
                         px *= square_size;

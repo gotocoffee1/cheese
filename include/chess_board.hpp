@@ -46,8 +46,8 @@ private:
     bool black_a_rook_moved = true;
     bool black_h_rook_moved = true;
 
-public:
     array<uint64_t, (size_t)figure::num> board;
+public:
     inline const uint64_t& operator[](figure l) const
     {
         return board[(size_t)l];

@@ -7,6 +7,9 @@
 #include "type.hpp"
 #include "chess_board.hpp"
 
+
+namespace cheese
+{
 class compressed_board
 {
 private:
@@ -73,3 +76,4 @@ public:
     // bit 4 -> color
     //+---+---------------------------------------------+
 };
+}
