@@ -26,20 +26,31 @@ endif()
 
 add_subdirectory ("ext")
 
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.14/conan.cmake"
-                "${CMAKE_BINARY_DIR}/conan.cmake")
+if(EMSCRIPTEN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2")# --shell-file ext/imgui/examples/example_emscripten/shell_minimal.html")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_WEBGL2=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s WASM=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s FULL_ES3=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ALLOW_MEMORY_GROWTH=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --shell-file ${PROJECT_SOURCE_DIR}/ext/guinea/ext/imgui/examples/example_emscripten/shell_minimal.html")
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+else()
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.14/conan.cmake"
+                    "${CMAKE_BINARY_DIR}/conan.cmake")
+    endif()
+
+    include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+    conan_add_remote(NAME bincrafters INDEX 1
+                URL https://api.bintray.com/conan/bincrafters/public-conan)
+
+    conan_cmake_run(CONANFILE conanfile.txt
+                    BASIC_SETUP)
 endif()
-
-include(${CMAKE_BINARY_DIR}/conan.cmake)
-
-conan_add_remote(NAME bincrafters INDEX 1
-            URL https://api.bintray.com/conan/bincrafters/public-conan)
-
-conan_cmake_run(CONANFILE conanfile.txt
-                BASIC_SETUP)
-
                 
 add_subdirectory ("src")
 

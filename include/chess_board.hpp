@@ -1,7 +1,9 @@
 #pragma once
 
-#include <tuple>
 #include <array>
+#include <cassert>
+#include <tuple>
+
 #include "chess_piece.hpp"
 
 enum class column
@@ -50,21 +52,25 @@ private:
 public:
     inline const uint64_t& operator[](figure l) const
     {
+        assert(((size_t)figure::pawn <= (size_t)l) && ((size_t)l <= (size_t)figure::king));
         return board[(size_t)l];
     }
 
     inline const uint64_t& operator[](color l) const
     {
+        assert(l == color::black || l == color::white);
         return board[(size_t)l];
     }
 
     inline uint64_t& operator[](figure l)
     {
+        assert(((size_t)figure::pawn <= (size_t)l) && ((size_t)l <= (size_t)figure::king));
         return board[(size_t)l];
     }
 
     inline uint64_t& operator[](color l)
     {
+        assert(l == color::black || l == color::white);
         return board[(size_t)l];
     }
 
