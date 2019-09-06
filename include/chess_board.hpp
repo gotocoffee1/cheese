@@ -32,11 +32,15 @@ enum class row
 
 #define LINE(bit, num) (UINT64_C(bit) << ((num)*8))
 
+
+
 class chess_board
 {
 private:
     
     color turn_col = color::white;
+
+    using layer_t = uint64_t;
 
     //1-8: white pawn moved 2 fields
     //-1--8 black pawn moved 2 fields
@@ -48,33 +52,33 @@ private:
     bool black_a_rook_moved = true;
     bool black_h_rook_moved = true;
 
-    array<uint64_t, (size_t)figure::num> board;
+    array<layer_t, (size_t)figure::num> board;
 public:
-    inline const uint64_t& operator[](figure l) const
+    inline const layer_t& operator[](figure l) const
     {
         assert(((size_t)figure::pawn <= (size_t)l) && ((size_t)l <= (size_t)figure::king));
         return board[(size_t)l];
     }
 
-    inline const uint64_t& operator[](color l) const
+    inline const layer_t& operator[](color l) const
     {
         assert(l == color::black || l == color::white);
         return board[(size_t)l];
     }
 
-    inline uint64_t& operator[](figure l)
+    inline layer_t& operator[](figure l)
     {
         assert(((size_t)figure::pawn <= (size_t)l) && ((size_t)l <= (size_t)figure::king));
         return board[(size_t)l];
     }
 
-    inline uint64_t& operator[](color l)
+    inline layer_t& operator[](color l)
     {
         assert(l == color::black || l == color::white);
         return board[(size_t)l];
     }
 
-    tuple<figure, color> get(uint64_t mask) const
+    std::tuple<figure, color> get(layer_t mask) const
     {
         color c;
         if ((*this)[color::white] & mask)
@@ -89,19 +93,19 @@ public:
         return { figure::none, color::none };
     }
 
-    static inline uint64_t get_mask(column x, row y)
+    static inline layer_t get_mask(column x, row y)
     {
         return ((UINT64_C(1) << (size_t)x) << ((size_t)y * 8));
     }
 
-    static inline uint64_t get_mask(size_t x, size_t y)
+    static inline layer_t get_mask(size_t x, size_t y)
     {
         if (x <= (size_t)column::H && y <= (size_t)row::_8)
             return get_mask((column)x, (row)y);
         return 0;
     }
 
-    array<tuple<column, row>, 64> get_coords_from_mask(uint64_t mask) const
+    array<tuple<column, row>, 64> get_coords_from_mask(layer_t mask) const
     {
         array<tuple<column, row>, 64> positive_coords;
         size_t j = 0;
@@ -121,7 +125,7 @@ public:
         return positive_coords;
     }
 
-    static inline void print_bit_field(uint64_t map)
+    static inline void print_bit_field(layer_t map)
     {
         string line0 = "";
         string line1 = "";
@@ -147,7 +151,7 @@ public:
         cout << line;
     }
 
-    static inline string get_one(uint64_t map, size_t i)
+    static inline string get_one(layer_t map, size_t i)
     {
         if (map & (UINT64_C(1) << (i)))
         {
@@ -163,24 +167,24 @@ public:
 
     inline bool is_figure_pinned(column sx, row sy, column tx, row ty, figure f, color col) const
     {
-        array<uint64_t, (size_t)figure::num> b = board;
+        auto b = *this;
         //auslagern?
-        uint64_t source = get_mask(sx, sy);
-        uint64_t target = get_mask(tx, ty);
-        b[(size_t)f] &= ~source;
-        b[(size_t)col] &= ~source;
+        layer_t source = get_mask(sx, sy);
+        layer_t target = get_mask(tx, ty);
+        b[f] &= ~source;
+        b[col] &= ~source;
 
         tuple<figure, color> tf = get(target);
         if (std::get<0>(tf) != figure::none)
         {
-            b[(size_t)std::get<0>(tf)] &= ~target;
-            b[(size_t)std::get<1>(tf)] &= ~target;
+            b[std::get<0>(tf)] &= ~target;
+            b[std::get<1>(tf)] &= ~target;
         }
 
-        b[(size_t)f] |= target;
-        b[(size_t)col] |= target;
+        b[f] |= target;
+        b[col] |= target;
 
-        tuple<column, row> king_coords = get_coords_from_mask(b[(size_t)figure::king] & b[(size_t)col])[0];
+        tuple<column, row> king_coords = get_coords_from_mask(b[figure::king] & b[col])[0];
         column king_x = std::get<0>(king_coords);
         row king_y = std::get<1>(king_coords);
         bool ret = false;
@@ -192,14 +196,14 @@ public:
         return ret;
     }
 
-    inline uint64_t king_in_chess(column c, row r, color col) const
+    inline layer_t king_in_chess(column c, row r, color col) const
     {
-        return king_in_chess(c, r, col, board);
+        return king_in_chess(c, r, col, *this);
     }
-    inline uint64_t king_in_chess(column c, row r, color col, array<uint64_t, (size_t)figure::num> b) const
+    inline layer_t king_in_chess(column c, row r, color col, const chess_board& b) const
     {
-        uint64_t ret = get_mask(c, r);
-        uint64_t opp_board = b[(size_t)not_col(col)];
+        layer_t ret = get_mask(c, r);
+        layer_t opp_board = b[not_col(col)];
 
         int direction = -1;
         if (col == color::white)
@@ -207,30 +211,30 @@ public:
             direction = 1;
         }
 
-        if ((get_mask((size_t)c - 1, (size_t)r + direction) & b[(size_t)figure::pawn] & opp_board) ||
-            (get_mask((size_t)c + 1, (size_t)r + direction) & b[(size_t)figure::pawn] & opp_board))
+        if ((get_mask((size_t)c - 1, (size_t)r + direction) & b[figure::pawn] & opp_board) ||
+            (get_mask((size_t)c + 1, (size_t)r + direction) & b[figure::pawn] & opp_board))
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::knight, col, b, false) & b[(size_t)figure::knight] & opp_board)
+        if (get_all_possible_fields(c, r, figure::knight, col, b, false) & b[figure::knight] & opp_board)
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::bishop, col, b, false) & b[(size_t)figure::bishop] & opp_board)
+        if (get_all_possible_fields(c, r, figure::bishop, col, b, false) & b[figure::bishop] & opp_board)
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::rook, col, b, false) & b[(size_t)figure::rook] & opp_board)
+        if (get_all_possible_fields(c, r, figure::rook, col, b, false) & b[figure::rook] & opp_board)
         {
             return ret;
         }
-        if (get_all_possible_fields(c, r, figure::queen, col, b, false) & b[(size_t)figure::queen] & opp_board)
+        if (get_all_possible_fields(c, r, figure::queen, col, b, false) & b[figure::queen] & opp_board)
         {
             return ret;
         }
 
         //opposition
-        uint64_t enemy_king = b[(size_t)figure::king] & b[(size_t)not_col(col)];
+        layer_t enemy_king = b[figure::king] & b[not_col(col)];
         size_t ex = 0;
         size_t ey = 0;
         for (size_t i = 0; i < 64; i++)
@@ -251,17 +255,18 @@ public:
         return UINT64_C(0);
     }
 
-    uint64_t get_all_possible_fields(column x, row y) const
+    layer_t get_all_possible_fields(column x, row y) const
     {
         tuple<figure, color> fc = get(get_mask(x, y));
         return get_all_possible_fields(x, y, std::get<0>(fc), std::get<1>(fc), true);
     }
 
-    uint64_t get_all_possible_fields(column c, row r, figure f, color col, bool pin = true) const
+    layer_t get_all_possible_fields(column c, row r, figure f, color col, bool pin = true) const
     {
-        return get_all_possible_fields(c, r, f, col, board, pin);
+        return get_all_possible_fields(c, r, f, col, *this, pin);
     }
-    uint64_t get_all_possible_fields(column c, row r, figure f, color col, array<uint64_t, (size_t)figure::num> b, bool pin = true) const
+
+    layer_t get_all_possible_fields(column c, row r, figure f, color col, chess_board b, bool pin = true) const
     {
         auto x = (size_t)c;
         auto y = (size_t)r;
@@ -272,7 +277,7 @@ public:
         {
         case figure::pawn:
 		{
-			uint64_t moves = 0;
+			layer_t moves = 0;
 			int direction = -1;
 			size_t start_position = 6;
 			if (col == color::white)
@@ -282,11 +287,11 @@ public:
 			}
 			
 			//normal move
-			if (get_mask(x, y + direction) & ~b[(size_t)color::white] & ~b[(size_t)color::black])
+			if (get_mask(x, y + direction) & ~b[color::white] & ~b[color::black])
 			{
 				if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x), (row)(y + direction), f, col))
 					moves |= get_mask(x, y + direction);
-				if ((y == start_position) && (get_mask(x, y + 2 * direction) & ~b[(size_t)color::white] & ~b[(size_t)color::black]))
+				if ((y == start_position) && (get_mask(x, y + 2 * direction) & ~b[color::white] & ~b[color::black]))
 				{
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x), (row)(y + 2 * direction), f, col))
 						moves |= get_mask(x, y + 2 * direction);
@@ -295,12 +300,12 @@ public:
 			//starts with 1 and not with 0
 			int en_passant_l = en_passant * -direction;
 			//capture with en passant
-			if (get_mask(x + 1, y + direction) & b[(size_t)op_col] || ((en_passant_l == x + 2) && (get_mask(x + 1, y) & b[(size_t)figure::pawn] & b[(size_t)op_col])))
+			if (get_mask(x + 1, y + direction) & b[op_col] || ((en_passant_l == x + 2) && (get_mask(x + 1, y) & b[figure::pawn] & b[op_col])))
 			{
 				if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x + 1), (row)(y + direction), f, col))
 					moves |= get_mask(x + 1, y + direction);
 			}
-			if (get_mask(x - 1, y + direction) & b[(size_t)op_col] || ((en_passant_l == x) && (get_mask(x - 1, y) & b[(size_t)figure::pawn] & b[(size_t)op_col])))
+			if (get_mask(x - 1, y + direction) & b[op_col] || ((en_passant_l == x) && (get_mask(x - 1, y) & b[figure::pawn] & b[op_col])))
 			{
 				if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x - 1), (row)(y + direction), f, col))
 					moves |= get_mask(x - 1, y + direction);
@@ -308,12 +313,12 @@ public:
 
 			//change in last row
             
-            return moves & ~b[(size_t)col];
+            return moves & ~b[col];
 		}
 
         case figure::knight:
         {
-            uint64_t moves = 0;
+            layer_t moves = 0;
 			if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x + 2), (row)(y + 1), f, col))
 				moves|= get_mask(x + 2, y + 1);
             if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x + 2), (row)(y - 1), f, col))
@@ -330,12 +335,12 @@ public:
 				moves|= get_mask(x - 1, y + 2);
             if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x - 1), (row)(y - 2), f, col))
 				moves|= get_mask(x - 1, y - 2);
-            return moves & ~b[(size_t)col];
+            return moves & ~b[col];
         }
 
 		case figure::bishop:
 		{
-			uint64_t moves = 0;
+			layer_t moves = 0;
 			size_t diff = 1;
 			bool lup_way = false;
 			bool rup_way = false;
@@ -344,10 +349,10 @@ public:
 
 			for (size_t i = x + 1; diff < 8; i++) {
 				diff = i - x;
-				if (!rup_way && get_mask(x + diff, y + diff) & ~b[(size_t)col]) {
+				if (!rup_way && get_mask(x + diff, y + diff) & ~b[col]) {
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x + diff), (row)(y + diff), f, col))
 						moves |= get_mask(x + diff, y + diff);
-					if (get_mask(x + diff, y + diff) & b[(size_t)op_col])
+					if (get_mask(x + diff, y + diff) & b[op_col])
 					{
 						rup_way = true;
 					}
@@ -356,10 +361,10 @@ public:
 					rup_way = true;
 				}
 
-				if (!rdown_way && get_mask(x + diff, y - diff) & ~b[(size_t)col]) {
+				if (!rdown_way && get_mask(x + diff, y - diff) & ~b[col]) {
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x + diff), (row)(y - diff), f, col))
 						moves |= get_mask(x + diff, y - diff);
-					if (get_mask(x + diff, y - diff) & b[(size_t)op_col])
+					if (get_mask(x + diff, y - diff) & b[op_col])
 					{
 						rdown_way = true;
 					}
@@ -368,10 +373,10 @@ public:
 					rdown_way = true;
 				}
 				
-				if (!lup_way && get_mask(x - diff, y + diff) & ~b[(size_t)col]) {
+				if (!lup_way && get_mask(x - diff, y + diff) & ~b[col]) {
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x - diff), (row)(y + diff), f, col))
 						moves |= get_mask(x - diff, y + diff);
-					if (get_mask(x - diff, y + diff) & b[(size_t)op_col])
+					if (get_mask(x - diff, y + diff) & b[op_col])
 					{
 						lup_way = true;
 					}
@@ -380,10 +385,10 @@ public:
 					lup_way = true;
 				}
 				
-				if (!ldown_way && get_mask(x - diff, y - diff) & ~b[(size_t)col]) {
+				if (!ldown_way && get_mask(x - diff, y - diff) & ~b[col]) {
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x - diff), (row)(y - diff), f, col))
 						moves |= get_mask(x - diff, y - diff);
-					if (get_mask(x - diff, y - diff) & b[(size_t)op_col])
+					if (get_mask(x - diff, y - diff) & b[op_col])
 					{
 						ldown_way = true;
 					}
@@ -392,12 +397,12 @@ public:
 					ldown_way = true;
 				}
 			}
-			return moves & ~b[(size_t)col];
+			return moves & ~b[col];
 		}
 
 		case figure::rook:
 		{
-			uint64_t moves = 0;
+			layer_t moves = 0;
 			size_t diff = 1;
 			bool up_way = false;
 			bool down_way = false;
@@ -406,10 +411,10 @@ public:
 
 			for (size_t i = x + 1; diff < 8; i++) {
 				diff = i - x;
-				if (!right_way && get_mask(x + diff, y) & ~b[(size_t)col]) {
+				if (!right_way && get_mask(x + diff, y) & ~b[col]) {
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x + diff), (row)(y), f, col))
 						moves |= get_mask(x + diff, y);
-					if (get_mask(x + diff, y) & b[(size_t)op_col])
+					if (get_mask(x + diff, y) & b[op_col])
 					{
 						right_way = true;
 					}
@@ -418,10 +423,10 @@ public:
 					right_way = true;
 				}
 
-				if (!left_way && get_mask(x - diff, y) & ~b[(size_t)col]) {
+				if (!left_way && get_mask(x - diff, y) & ~b[col]) {
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x - diff), (row)(y), f, col))
 						moves |= get_mask(x - diff, y);
-					if (get_mask(x - diff, y) & b[(size_t)op_col])
+					if (get_mask(x - diff, y) & b[op_col])
 					{
 						left_way = true;
 					}
@@ -430,10 +435,10 @@ public:
 					left_way = true;
 				}
 				
-				if (!up_way && get_mask(x, y + diff) & ~b[(size_t)col]) {
+				if (!up_way && get_mask(x, y + diff) & ~b[col]) {
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x), (row)(y + diff), f, col))
 						moves |= get_mask(x, y + diff);
-					if (get_mask(x, y + diff) & b[(size_t)op_col])
+					if (get_mask(x, y + diff) & b[op_col])
 					{
 						up_way = true;
 					}
@@ -442,10 +447,10 @@ public:
 					up_way = true;
 				}
 				
-				if (!down_way && get_mask(x, y - diff) & ~b[(size_t)col]) {
+				if (!down_way && get_mask(x, y - diff) & ~b[col]) {
 					if (!pin || !is_figure_pinned((column) x, (row)y, (column)(x), (row)(y - diff), f, col))
 						moves |= get_mask(x, y - diff);
-					if (get_mask(x, y - diff) & b[(size_t)op_col])
+					if (get_mask(x, y - diff) & b[op_col])
 					{
 						down_way = true;
 					}
@@ -454,7 +459,7 @@ public:
 					down_way = true;
 				}
 			}
-			return moves & ~b[(size_t)col];
+			return moves & ~b[col];
 		}
 
 		case figure::queen:
@@ -466,7 +471,7 @@ public:
 		case figure::king:
 		{
 			//move
-			uint64_t moves = 0
+			layer_t moves = 0
             | get_mask(x, y + 1)
             | get_mask(x + 1, y + 1)
             | get_mask(x + 1, y)
@@ -478,8 +483,8 @@ public:
             ;
 
 			//dont move into chess
-			b[(size_t)f] &= ~get_mask(x, y);
-			b[(size_t)col] &= ~get_mask(x, y);
+			b[f] &= ~get_mask(x, y);
+			b[col] &= ~get_mask(x, y);
 			moves &= ~king_in_chess((column)(x), (row)(y + 1), col, b)
 			& ~king_in_chess((column)(x + 1), (row)(y + 1), col, b)
 			& ~king_in_chess((column)(x + 1), (row)(y), col, b)
@@ -488,8 +493,8 @@ public:
 			& ~king_in_chess((column)(x - 1), (row)(y - 1), col, b)
 			& ~king_in_chess((column)(x - 1), (row)(y), col, b)
 			& ~king_in_chess((column)(x - 1), (row)(y + 1), col, b);
-			b[(size_t)f] |= get_mask(x, y);
-			b[(size_t)col] |= get_mask(x, y);
+			b[f] |= get_mask(x, y);
+			b[col] |= get_mask(x, y);
 
 			//castleing
 			if (!king_in_chess((column)(x), (row)(y), col))
@@ -498,21 +503,21 @@ public:
 				{
 					if (!white_king_moved)
 					{
-						if (!white_a_rook_moved && get_mask(0, 0) & b[(size_t)col] & b[(size_t)figure::rook] &&
-							get_mask(1, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+						if (!white_a_rook_moved && get_mask(0, 0) & b[col] & b[figure::rook] &&
+							get_mask(1, 0) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)1, (row)0, col) &&
-							get_mask(2, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+							get_mask(2, 0) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)2, (row)0, col) &&
-							get_mask(3, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+							get_mask(3, 0) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)3, (row)0, col)
 							)
 						{
 							moves |= get_mask(2, 0);
 						}
-						if (!white_h_rook_moved && get_mask(7, 0) & b[(size_t)col] & b[(size_t)figure::rook] &&
-							get_mask(5, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+						if (!white_h_rook_moved && get_mask(7, 0) & b[col] & b[figure::rook] &&
+							get_mask(5, 0) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)5, (row)0, col) &&
-							get_mask(6, 0) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+							get_mask(6, 0) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)6, (row)0, col)
 							)
 						{
@@ -524,21 +529,21 @@ public:
 				{
 					if (!black_king_moved)
 					{
-						if (!black_a_rook_moved &&  get_mask(0, 7) & b[(size_t)col] & b[(size_t)figure::rook] &&
-							get_mask(1, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+						if (!black_a_rook_moved &&  get_mask(0, 7) & b[col] & b[figure::rook] &&
+							get_mask(1, 7) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)1, (row)7, col) &&
-							get_mask(2, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+							get_mask(2, 7) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)2, (row)7, col) &&
-							get_mask(3, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+							get_mask(3, 7) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)3, (row)7, col)
 							)
 						{
 							moves |= get_mask(2, 7);
 						}
-						if (!black_h_rook_moved &&  get_mask(7, 7) & b[(size_t)col] & b[(size_t)figure::rook] &&
-							get_mask(5, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+						if (!black_h_rook_moved &&  get_mask(7, 7) & b[col] & b[figure::rook] &&
+							get_mask(5, 7) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)5, (row)7, col) &&
-							get_mask(6, 7) & ~b[(size_t)col] & ~b[(size_t)op_col] &&
+							get_mask(6, 7) & ~b[col] & ~b[op_col] &&
 							!king_in_chess((column)6, (row)7, col)
 							)
 						{
@@ -548,7 +553,7 @@ public:
 				}
 			}
 
-            return moves & ~b[(size_t)col];
+            return moves & ~b[col];
 		}
 
 
@@ -558,13 +563,13 @@ public:
         // clang-format on
     }
 
-    void set(uint64_t mask, figure f, color col)
+    void set(layer_t mask, figure f, color col)
     {
         (*this)[f] |= mask;
         (*this)[col] |= mask;
     }
 
-    void clear(uint64_t mask, figure f, color col)
+    void clear(layer_t mask, figure f, color col)
     {
         (*this)[f] &= ~mask;
         (*this)[col] &= ~mask;
